@@ -6,6 +6,8 @@ import SignUp from "./pages/SignUp";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import UserContextProvider, { UserContext } from "./context/UserContext";
+import EmployeeContextProvider from "./context/EmployeeContext";
+import EmployeeManagement from "./pages/EmployeeManagement";
 
 // ProtectedRoute: Use loading and isLogin
 function ProtectedRoute({ children }) {
@@ -21,10 +23,11 @@ function App() {
 
   return (
     <UserContextProvider>
+      <EmployeeContextProvider>
       <div className="App">
         <Navbar />
         <Routes>
-          <Route path="/" element={<SignUp />} />
+          <Route path="/" element={<Login/>} />
           <Route
             path="/login"
             element={user && user.isLogin ? <Navigate to="/profile" /> : <Login />}
@@ -53,7 +56,7 @@ function App() {
             path="/dashboard"
             element={
               <ProtectedRoute>
-                <div>Dashboard Page</div>
+                  <EmployeeManagement/>
               </ProtectedRoute>
             }
           />
@@ -74,14 +77,6 @@ function App() {
             }
           />
           <Route
-            path="/deliverables"
-            element={
-              <ProtectedRoute>
-                <div>Deliverables Page</div>
-              </ProtectedRoute>
-            }
-          />
-          <Route
             path="*"
             element={
               <ProtectedRoute>
@@ -92,6 +87,7 @@ function App() {
         </Routes>
         <ToastContainer position="top-right" autoClose={3000} />
       </div>
+      </EmployeeContextProvider>
     </UserContextProvider>
   );
 }

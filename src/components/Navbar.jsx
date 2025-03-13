@@ -15,7 +15,7 @@ function Navbar() {
 
   if (!user) return null; // Hide navbar if not logged in
 
-  const isAdminOrSubadmin = user.role?.name === 'admin' || user.role?.name === 'subadmin'; // Check user.role.name
+  const isAdminOrSubadmin = user.role?.name === 'admin' || user.role?.name === 'subadmin';
 
   return (
     <>
@@ -67,31 +67,10 @@ function Navbar() {
                   </svg>
                   Dashboard
                 </Link>
-                <Link
-                  to="/products"
-                  className="flex px-5 items-center py-6 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none transition duration-150 ease-in-out"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="mr-2"
-                    width={20}
-                    height={20}
-                    viewBox="0 0 24 24"
-                    strokeWidth="1.5"
-                    stroke="currentColor"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path stroke="none" d="M0 0h24v24H0z" />
-                    <path d="M4 7h3a1 1 0 0 0 1 -1v-1a2 2 0 0 1 4 0v1a1 1 0 0 0 1 1h3a1 1 0 0 1 1 1v3a1 1 0 0 0 1 1h1a2 2 0 0 1 0 4h-1a1 1 0 0 0 -1 1v3a1 1 0 0 1 -1 1h-3a1 1 0 0 1 -1 -1v-1a2 2 0 0 0 -4 0v1a1 1 0 0 1 -1 1h-3a1 1 0 0 1 -1 -1v-3a1 1 0 0 1 1 -1h1a2 2 0 0 0 0 -4h-1a1 1 0 0 1 -1 -1v-3a1 1 0 0 1 1 -1" />
-                  </svg>
-                  Products
-                </Link>
-                {isAdminOrSubadmin && (
+                {isAdminOrSubadmin ? (
                   <>
                     <Link
-                      to="/performance"
+                      to="/manage-roles"
                       className="flex px-5 items-center py-6 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none transition duration-150 ease-in-out"
                     >
                       <svg
@@ -107,13 +86,12 @@ function Navbar() {
                         strokeLinejoin="round"
                       >
                         <path stroke="none" d="M0 0h24v24H0z" />
-                        <polyline points="8 16 10 10 16 8 14 14 8 16" />
-                        <circle cx={12} cy={12} r={9} />
+                        <path d="M4 7h3a1 1 0 0 0 1 -1v-1a2 2 0 0 1 4 0v1a1 1 0 0 0 1 1h3a1 1 0 0 1 1 1v3a1 1 0 0 0 1 1h1a2 2 0 0 1 0 4h-1a1 1 0 0 0 -1 1v3a1 1 0 0 1 -1 1h-3a1 1 0 0 1 -1 -1v-1a2 2 0 0 0 -4 0v1a1 1 0 0 1 -1 1h-3a1 1 0 0 1 -1 -1v-3a1 1 0 0 1 1 -1h1a2 2 0 0 0 0 -4h-1a1 1 0 0 1 -1 -1v-3a1 1 0 0 1 1 -1" />
                       </svg>
-                      Performance
+                      Manage Roles
                     </Link>
                     <Link
-                      to="/deliverables"
+                      to="/manage-user"
                       className="flex px-5 items-center py-6 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none transition duration-150 ease-in-out"
                     >
                       <svg
@@ -129,13 +107,34 @@ function Navbar() {
                         strokeLinejoin="round"
                       >
                         <path stroke="none" d="M0 0h24v24H0z" />
-                        <polyline points="7 8 3 12 7 16" />
-                        <polyline points="17 8 21 12 17 16" />
-                        <line x1={14} y1={4} x2={10} y2={20} />
+                        <path d="M12 7a5 5 0 0 1 5 5v3a2 2 0 0 1 -2 2h-6a2 2 0 0 1 -2 -2v-3a5 5 0 0 1 5 -5z" />
+                        <path d="M12 7v-3m-4 5h8" />
                       </svg>
-                      Deliverables
+                      Manage User
                     </Link>
                   </>
+                ) : (
+                  <Link
+                    to="/view-reviews"
+                    className="flex px-5 items-center py-6 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none transition duration-150 ease-in-out"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="mr-2"
+                      width={20}
+                      height={20}
+                      viewBox="0 0 24 24"
+                      strokeWidth="1.5"
+                      stroke="currentColor"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path stroke="none" d="M0 0h24v24H0z" />
+                      <path d="M12 4v3m-4 5h8m-10 6h12m-8-10v8" />
+                    </svg>
+                    View Reviews
+                  </Link>
                 )}
               </div>
 
@@ -260,28 +259,10 @@ function Navbar() {
                       <p className="text-indigo-700 xl:text-base text-base ml-3">Dashboard</p>
                     </Link>
                   </li>
-                  <li className="text-gray-800 pt-8">
-                    <Link to="/products" className="flex items-center">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="w-6 h-6 md:w-8 md:h-8 text-gray-800"
-                        viewBox="0 0 24 24"
-                        strokeWidth="1.5"
-                        stroke="currentColor"
-                        fill="none"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path stroke="none" d="M0 0h24v24H0z" />
-                        <path d="M4 7h3a1 1 0 0 0 1 -1v-1a2 2 0 0 1 4 0v1a1 1 0 0 0 1 1h3a1 1 0 0 1 1 1v3a1 1 0 0 0 1 1h1a2 2 0 0 1 0 4h-1a1 1 0 0 0 -1 1v3a1 1 0 0 1 -1 1h-3a1 1 0 0 1 -1 -1v-1a2 2 0 0 0 -4 0v1a1 1 0 0 1 -1 1h-3a1 1 0 0 1 -1 -1v-3a1 1 0 0 1 1 -1h1a2 2 0 0 0 0 -4h-1a1 1 0 0 1 -1 -1v-3a1 1 0 0 1 1 -1" />
-                      </svg>
-                      <p className="text-gray-800 xl:text-base text-base ml-3">Products</p>
-                    </Link>
-                  </li>
-                  {isAdminOrSubadmin && (
+                  {isAdminOrSubadmin ? (
                     <>
                       <li className="text-gray-800 pt-8">
-                        <Link to="/performance" className="flex items-center">
+                        <Link to="/manage-roles" className="flex items-center">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             className="w-6 h-6 md:w-8 md:h-8 text-gray-800"
@@ -293,17 +274,16 @@ function Navbar() {
                             strokeLinejoin="round"
                           >
                             <path stroke="none" d="M0 0h24v24H0z" />
-                            <polyline points="8 16 10 10 16 8 14 14 8 16" />
-                            <circle cx={12} cy={12} r={9} />
+                            <path d="M4 7h3a1 1 0 0 0 1 -1v-1a2 2 0 0 1 4 0v1a1 1 0 0 0 1 1h3a1 1 0 0 1 1 1v3a1 1 0 0 0 1 1h1a2 2 0 0 1 0 4h-1a1 1 0 0 0 -1 1v3a1 1 0 0 1 -1 1h-3a1 1 0 0 1 -1 -1v-1a2 2 0 0 0 -4 0v1a1 1 0 0 1 -1 1h-3a1 1 0 0 1 -1 -1v-3a1 1 0 0 1 1 -1h1a2 2 0 0 0 0 -4h-1a1 1 0 0 1 -1 -1v-3a1 1 0 0 1 1 -1" />
                           </svg>
-                          <p className="text-gray-800 xl:text-base text-base ml-3">Performance</p>
+                          <p className="text-gray-800 xl:text-base text-base ml-3">Manage Roles</p>
                         </Link>
                       </li>
                       <li className="text-gray-800 pt-8">
-                        <Link to="/deliverables" className="flex items-center">
+                        <Link to="/manage-user" className="flex items-center">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
-                            className="w-6 h-6 md:w-8 md:h-8 text-gray-800"
+                            className="w-7 h-7 md:w-9 md:h-9 text-gray-800"
                             viewBox="0 0 24 24"
                             strokeWidth="1.5"
                             stroke="currentColor"
@@ -312,14 +292,26 @@ function Navbar() {
                             strokeLinejoin="round"
                           >
                             <path stroke="none" d="M0 0h24v24H0z" />
-                            <polyline points="7 8 3 12 7 16" />
-                            <polyline points="17 8 21 12 17 16" />
-                            <line x1={14} y1={4} x2={10} y2={20} />
+                            <path d="M12 7a5 5 0 0 1 5 5v3a2 2 0 0 1 -2 2h-6a2 2 0 0 1 -2 -2v-3a5 5 0 0 1 5 -5z" />
+                            <path d="M12 7v-3m-4 5h8" />
                           </svg>
-                          <p className="text-gray-800 xl:text-base text-base ml-3">Deliverables</p>
+                          <p className="text-gray-800 xl:text-base text-base ml-3">Manage User</p>
+                        </Link>
+                      </li>
+                      <li className="text-gray-800 pt-8">
+                        <Link to="/all-reviews" className="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24"><path fill="currentColor" d="M12.86 10.44L11 6.06l-1.86 4.39l-4.75.41L8 14l-1.08 4.63L11 16.17l4.09 2.46L14 14l3.61-3.14zm3.73 10.26L11 17.34L5.42 20.7l1.46-6.35l-4.92-4.28l6.49-.57l2.55-6l2.55 6l6.49.57l-4.92 4.27z"/></svg>
+                          <p className="text-gray-800 xl:text-base text-base ml-3">All Reviews</p>
                         </Link>
                       </li>
                     </>
+                  ) : (
+                    <li className="text-gray-800 pt-8">
+                      <Link to="/view-reviews" className="flex items-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24"><path fill="currentColor" d="M12.86 10.44L11 6.06l-1.86 4.39l-4.75.41L8 14l-1.08 4.63L11 16.17l4.09 2.46L14 14l3.61-3.14zm3.73 10.26L11 17.34L5.42 20.7l1.46-6.35l-4.92-4.28l6.49-.57l2.55-6l2.55 6l6.49.57l-4.92 4.27z"/></svg>
+                        <p className="text-gray-800 xl:text-base text-base ml-3">View Reviews</p>
+                      </Link>
+                    </li>
                   )}
                   <li className="text-gray-800 pt-8">
                     <button onClick={handleLogout} className="flex items-center">

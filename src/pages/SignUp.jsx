@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useContext } from 'react';
-import { UserContext } from '../context/userContext'; // Adjust path if needed
+import { UserContext } from '../context/UserContext'; // Adjust path if needed
 
 function SignUp() {
   const { signup, roles } = useContext(UserContext); // Use signup and roles from new context

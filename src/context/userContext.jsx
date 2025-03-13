@@ -15,57 +15,30 @@ export default function UserContextProvider(props) {
   useEffect(() => {
     const restoreSession = async () => {
       try {
-        // Check localStorage first
         const storedUser = localStorage.getItem('user');
-        if (storedUser) {
+        const storedToken = localStorage.getItem('accessToken');
+
+        if (storedUser && storedToken) {
           const parsedUser = JSON.parse(storedUser);
-          console.log('Restored from localStorage:', parsedUser);
-          if (parsedUser.isLogin) {
-            setUser(parsedUser);
-            setLoading(false);
-            return; // Use localStorage if isLogin: true
-          }
+          setUser({ ...parsedUser, accessToken: storedToken });
+          setLoading(false);
+          return;
         }
 
-        // Fallback to fetch /profile with cookies
-        console.log('No valid localStorage user, attempting /profile');
-        const profileResponse = await fetch(`${backendUrl}/profile`, {
-          method: 'GET',
-          credentials: 'include',
-        });
-        console.log('Profile status:', profileResponse.status);
-        if (!profileResponse.ok) {
-          console.log('Profile failed, attempting /refresh-token');
-          const refreshResponse = await fetch(`${backendUrl}/auth/refresh-token`, {
-            method: 'POST',
-            credentials: 'include',
-          });
-          console.log('Refresh status:', refreshResponse.status);
-          if (!refreshResponse.ok) {
-            const refreshError = await refreshResponse.json();
-            throw new Error(`Refresh failed: ${refreshError.message}`);
-          }
-          console.log('Refresh succeeded, retrying /profile');
-          const retryResponse = await fetch(`${backendUrl}/profile`, {
-            method: 'GET',
-            credentials: 'include',
-          });
-          console.log('Retry profile status:', retryResponse.status);
-          if (!retryResponse.ok) throw new Error('Session invalid after refresh');
-          const retryData = await retryResponse.json();
-          console.log('Retry profile data:', retryData);
-          setUser(retryData.user);
-          localStorage.setItem('user', JSON.stringify(retryData.user)); // Cache in localStorage
-        } else {
-          const data = await profileResponse.json();
-          console.log('Initial profile data:', data);
-          setUser(data.user);
-          localStorage.setItem('user', JSON.stringify(data.user)); // Cache in localStorage
-        }
+        console.log('No valid session, checking profile...');
+        const profileResponse = await fetchWithAuth(`${backendUrl}/profile`);
+
+        if (!profileResponse.ok) throw new Error('Session expired, refreshing token...');
+
+        const profileData = await profileResponse.json();
+        setUser(profileData.user);
+        localStorage.setItem('user', JSON.stringify(profileData.user));
+
       } catch (error) {
-        console.log('Session restore failed:', error.message);
+        console.log(error.message);
         setUser(null);
-        localStorage.removeItem('user'); // Clear invalid data
+        localStorage.removeItem('user');
+        localStorage.removeItem('accessToken');
       } finally {
         setLoading(false);
       }
@@ -74,13 +47,54 @@ export default function UserContextProvider(props) {
     restoreSession();
   }, []);
 
-  async function login(item) {
+  async function fetchWithAuth(url, options = {}) {
+    let accessToken = localStorage.getItem('accessToken');
+
+    const response = await fetch(url, {
+      ...options,
+      headers: {
+        ...(options.headers || {}),
+        Authorization: accessToken ? `Bearer ${accessToken}` : '',
+      },
+      credentials: 'include',
+    });
+
+    if (response.status === 401) {
+      console.log('Access token expired, trying to refresh...');
+      const refreshResponse = await fetch(`${backendUrl}/auth/refresh-token`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+
+      if (refreshResponse.ok) {
+        const refreshData = await refreshResponse.json();
+        localStorage.setItem('accessToken', refreshData.accessToken);
+        setUser((prevUser) => ({ ...prevUser, accessToken: refreshData.accessToken }));
+
+        return fetch(url, {
+          ...options,
+          headers: {
+            ...(options.headers || {}),
+            Authorization: `Bearer ${refreshData.accessToken}`,
+          },
+          credentials: 'include',
+        });
+      } else {
+        console.log('Refresh token failed, logging out...');
+        logout();
+        return refreshResponse;
+      }
+    }
+    return response;
+  }
+
+  async function login(credentials) {
     try {
       const response = await fetch(`${backendUrl}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify(item),
+        body: JSON.stringify(credentials),
       });
 
       if (!response.ok) {
@@ -89,9 +103,14 @@ export default function UserContextProvider(props) {
       }
 
       const data = await response.json();
-      console.log('Login response:', data);
-      setUser(data.user);
-      localStorage.setItem('user', JSON.stringify(data.user)); // Store user in localStorage
+      const { user, accessToken } = data;
+
+      if (!accessToken) throw new Error('Access token is missing!');
+
+      setUser({ ...user, accessToken });
+      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('accessToken', accessToken); // 🔥 Now properly setting accessToken
+
       toast.success('Login successful!');
       return data;
     } catch (error) {
@@ -100,11 +119,11 @@ export default function UserContextProvider(props) {
     }
   }
 
-  async function signup(item) {
+  async function signup(userData) {
     try {
       const formData = new FormData();
-      for (const key in item) {
-        formData.append(key, item[key]);
+      for (const key in userData) {
+        formData.append(key, userData[key]);
       }
 
       const response = await fetch(`${backendUrl}/auth/signup`, {
@@ -115,12 +134,11 @@ export default function UserContextProvider(props) {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Error while signing up');
+        throw new Error(errorData.message || 'Sign-up failed');
       }
 
-      const data = await response.json();
       toast.success('Sign-up successful! Please log in.');
-      return data;
+      return await response.json();
     } catch (error) {
       toast.error(error.message);
       return { error: error.message };
@@ -129,22 +147,17 @@ export default function UserContextProvider(props) {
 
   async function logout() {
     try {
-      const response = await fetch(`${backendUrl}/auth/logout`, {
+      await fetch(`${backendUrl}/auth/logout`, {
         method: 'POST',
         credentials: 'include',
       });
 
-      if (!response.ok) {
-        throw new Error('Logout failed');
-      }
-
       setUser(null);
-      localStorage.removeItem('user'); // Clear localStorage on logout
+      localStorage.removeItem('user');
+      localStorage.removeItem('accessToken');
       toast.success('Logged out successfully!');
-      return { message: 'Logged out successfully' };
     } catch (error) {
-      toast.error(error.message);
-      return { error: error.message };
+      toast.error('Logout failed');
     }
   }
 
@@ -157,6 +170,7 @@ export default function UserContextProvider(props) {
         user,
         setUser,
         loading,
+        fetchWithAuth,
       }}
     >
       {props.children}
