@@ -1,7 +1,7 @@
 import React, { createContext, useState, useContext, useCallback, useMemo } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-import { UserContext } from './UserContext'; // Assuming UserContext is in the same directory
+import { UserContext } from './userContext'; // Assuming UserContext is in the same directory
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -66,8 +66,8 @@ export default function EmployeeContextProvider({ children }) {
 
       const data = await response.json();
       console.log('Get all employees data:', data);
-      setEmployees(data.users || data || []); // Flexible: handle users, data, or array
-      return data.users || data;
+      setEmployees(data || data || []); // Flexible: handle users, data, or array
+      return data || data;
     } catch (error) {
       console.error('Get all employees error:', error.message);
       toast.error(error.message);

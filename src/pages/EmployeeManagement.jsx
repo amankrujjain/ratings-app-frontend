@@ -132,7 +132,7 @@ const EmployeeManagement = () => {
       deleteEmployee(id)
         .then(() => {
           console.log(`Employee with ID ${id} deleted successfully`);
-          getAllEmployees(); 
+          getAllEmployees();
           if (currentEmployees.length === 1 && currentPage > 1) {
             setCurrentPage((prev) => prev - 1);
           }
@@ -273,9 +273,8 @@ const EmployeeManagement = () => {
                     <td className="p-4 border-b border-slate-200">
                       <div className="w-max">
                         <div
-                          className={`relative grid items-center px-2 py-1 font-sans text-xs font-bold uppercase rounded-md select-none whitespace-nowrap ${
-                            emp.isActive ? 'bg-green-500/20 text-green-900' : 'bg-red-500/20 text-red-600'
-                          }`}
+                          className={`relative grid items-center px-2 py-1 font-sans text-xs font-bold uppercase rounded-md select-none whitespace-nowrap ${emp.isActive ? 'bg-green-500/20 text-green-900' : 'bg-red-500/20 text-red-600'
+                            }`}
                         >
                           <span>{emp.isActive ? 'Active' : 'Not Active'}</span>
                         </div>
@@ -378,81 +377,144 @@ const EmployeeManagement = () => {
           <div
             data-dialog-backdrop="dialog"
             data-dialog-backdrop-close="true"
-            className="absolute inset-0 z-[999] grid h-screen w-screen place-items-center bg-black bg-opacity-60 backdrop-blur-sm transition-opacity duration-300"
+            className="fixed inset-0 z-[999] grid h-screen w-screen place-items-center backdrop-blur-sm transition-opacity duration-300 overflow-y-auto py-8"
             onClick={() => setIsDialogOpen(false)}
           >
             <div
               data-dialog="dialog"
-              className="relative mx-auto flex w-full max-w-[24rem] flex-col rounded-xl bg-white text-slate-700 shadow-md"
+              className="relative w-full max-w-screen-md mx-4 sm:mx-6 lg:mx-8 flex flex-col rounded-xl bg-white text-slate-700 shadow-md"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex flex-col p-6">
-                <h4 className="text-2xl mb-1 font-semibold text-slate-700">Edit Member Details</h4>
-                <p className="mb-3 mt-1 text-slate-400">Update the member information below.</p>
+              {/* Header with Cross Button */}
+              <div className="flex items-center justify-between p-6 border-b border-slate-200">
+                <div className="flex flex-col">
+                  <h4 className="text-2xl font-semibold text-slate-800">Edit Employee</h4>
+                  <p className="mt-1 text-sm text-slate-500">Update the employee details below.</p>
+                </div>
+                <button
+                  className="p-1 text-slate-500 hover:text-slate-700 focus:outline-none transition-colors duration-200"
+                  onClick={() => setIsDialogOpen(false)}
+                  aria-label="Close"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-6 h-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
 
-                <div className="w-full max-w-sm min-w-[200px] mt-4">
-                  <label className="block mb-1 text-sm text-slate-700">Employee ID</label>
-                  <input
-                    type="text"
-                    name="employeeId"
-                    value={editEmployee.employeeId}
-                    onChange={handleInputChange}
-                    className="w-full h-10 bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md"
-                    placeholder="Enter employee ID"
-                    disabled // Typically, ID shouldn't be editable
-                  />
+              {/* Form Content */}
+              <div className="flex flex-col p-6 space-y-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div>
+                    <label className="block mb-1 text-sm font-medium text-slate-700">Employee ID</label>
+                    <input
+                      type="text"
+                      name="employeeId"
+                      value={editEmployee.employeeId}
+                      onChange={handleInputChange}
+                      className="w-full h-10 bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md"
+                      placeholder="Enter employee ID"
+                      disabled
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-1 text-sm font-medium text-slate-700">Member Name</label>
+                    <input
+                      type="text"
+                      name="employeeName"
+                      value={editEmployee.employeeName}
+                      onChange={handleInputChange}
+                      className="w-full h-10 bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md"
+                      placeholder="Enter member name"
+                    />
+                  </div>
                 </div>
 
-                <div className="w-full max-w-sm min-w-[200px] mt-4">
-                  <label className="block mb-1 text-sm text-slate-700">Member Name</label>
-                  <input
-                    type="text"
-                    name="employeeName"
-                    value={editEmployee.employeeName}
-                    onChange={handleInputChange}
-                    className="w-full h-10 bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md"
-                    placeholder="Enter member name"
-                  />
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div>
+                    <label className="block mb-1 text-sm font-medium text-slate-700">Email</label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={editEmployee.email}
+                      onChange={handleInputChange}
+                      className="w-full h-10 bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md"
+                      placeholder="Enter email"
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-1 text-sm font-medium text-slate-700">Designation</label>
+                    <input
+                      type="text"
+                      name="designation"
+                      value={editEmployee.designation}
+                      onChange={handleInputChange}
+                      className="w-full h-10 bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md"
+                      placeholder="Enter designation"
+                    />
+                  </div>
                 </div>
 
-                <div className="w-full max-w-sm min-w-[200px] mt-4">
-                  <label className="block mb-1 text-sm text-slate-700">Email</label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={editEmployee.email}
-                    onChange={handleInputChange}
-                    className="w-full h-10 bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md"
-                    placeholder="Enter email"
-                  />
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div>
+                    <label className="block mb-1 text-sm font-medium text-slate-700">Role</label>
+                    <input
+                      type="text"
+                      name="role"
+                      value={editEmployee.role}
+                      onChange={handleInputChange}
+                      className="w-full h-10 bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md"
+                      placeholder="Enter role"
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-1 text-sm font-medium text-slate-700">Phone Number</label>
+                    <input
+                      type="text"
+                      name="contactNo"
+                      value={editEmployee.contactNo}
+                      onChange={handleInputChange}
+                      className="w-full h-10 bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md"
+                      placeholder="Enter phone number"
+                    />
+                  </div>
                 </div>
 
-                <div className="w-full max-w-sm min-w-[200px] mt-4">
-                  <label className="block mb-1 text-sm text-slate-700">Designation</label>
-                  <input
-                    type="text"
-                    name="designation"
-                    value={editEmployee.designation}
-                    onChange={handleInputChange}
-                    className="w-full h-10 bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md"
-                    placeholder="Enter designation"
-                  />
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div>
+                    <label className="block mb-1 text-sm font-medium text-slate-700">Department</label>
+                    <input
+                      type="text"
+                      name="department"
+                      value={editEmployee.department}
+                      onChange={handleInputChange}
+                      className="w-full h-10 bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md"
+                      placeholder="Enter department"
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-1 text-sm font-medium text-slate-700">Active Status</label>
+                    <select
+                      name="isActive"
+                      value={editEmployee.isActive}
+                      onChange={handleInputChange}
+                      className="w-full h-10 bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md"
+                    >
+                      <option value="online">Online</option>
+                      <option value="offline">Offline</option>
+                    </select>
+                  </div>
                 </div>
 
-                <div className="w-full max-w-sm min-w-[200px] mt-4">
-                  <label className="block mb-1 text-sm text-slate-700">Role</label>
-                  <input
-                    type="text"
-                    name="role"
-                    value={editEmployee.role}
-                    onChange={handleInputChange}
-                    className="w-full h-10 bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md"
-                    placeholder="Enter role"
-                  />
-                </div>
-
-                <div className="w-full max-w-sm min-w-[200px] mt-4">
-                  <label className="block mb-1 text-sm text-slate-700">Photo</label>
+                <div>
+                  <label className="block mb-1 text-sm font-medium text-slate-700">Photo</label>
                   <input
                     type="file"
                     name="employeePhoto"
@@ -461,71 +523,28 @@ const EmployeeManagement = () => {
                     className="w-full h-10 bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md"
                   />
                 </div>
-
-                <div className="w-full max-w-sm min-w-[200px] mt-4">
-                  <label className="block mb-1 text-sm text-slate-700">Phone Number</label>
-                  <input
-                    type="text"
-                    name="contactNo"
-                    value={editEmployee.contactNo}
-                    onChange={handleInputChange}
-                    className="w-full h-10 bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md"
-                    placeholder="Enter phone number"
-                  />
-                </div>
-
-                <div className="w-full max-w-sm min-w-[200px] mt-4">
-                  <label className="block mb-1 text-sm text-slate-700">Department</label>
-                  <input
-                    type="text"
-                    name="department"
-                    value={editEmployee.department}
-                    onChange={handleInputChange}
-                    className="w-full h-10 bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md"
-                    placeholder="Enter department"
-                  />
-                </div>
-
-                <div className="w-full max-w-sm min-w-[200px] mt-4">
-                  <label className="block mb-1 text-sm text-slate-700">Active Status</label>
-                  <input
-                    type="text"
-                    name="isActive"
-                    value={editEmployee.isActive}
-                    onChange={handleInputChange}
-                    className="w-full h-10 bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md"
-                    placeholder="Online/Offline"
-                  />
-                </div>
               </div>
-              <div className="p-6 pt-0">
-                <div className="flex space-x-2">
-                  <button
-                    className="w-full mx-auto select-none rounded border border-red-600 py-2 px-4 text-center text-sm font-semibold text-red-600 transition-all hover:bg-red-600 hover:text-white hover:shadow-md hover:shadow-red-600/20 active:bg-red-700 active:text-white active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-                    type="button"
-                    onClick={() => setIsDialogOpen(false)}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    className="w-full mx-auto select-none rounded bg-slate-800 py-2 px-4 text-center text-sm font-semibold text-white shadow-md shadow-slate-900/10 transition-all hover:shadow-lg hover:shadow-slate-900/20 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-                    type="button"
-                    onClick={() => handleSave(selectedEmployee._id)}
-                  >
-                    Save
-                  </button>
-                </div>
-                <p className="flex justify-center mt-4 font-sans text-sm text-slate-500">
-                  Looking for more details? Contact
-                  <a href="#admin" className="ml-1 text-sm font-bold leading-normal text-slate-500">
-                    Admin.
-                  </a>
-                </p>
+
+              {/* Footer with Buttons */}
+              <div className="flex flex-col sm:flex-row justify-end p-6 border-t border-slate-200 space-y-2 sm:space-y-0 sm:space-x-2">
+                <button
+                  className="w-full sm:w-auto select-none rounded border border-red-600 py-2 px-4 text-center text-sm font-semibold text-red-600 transition-all hover:bg-red-600 hover:text-white hover:shadow-md hover:shadow-red-600/20 active:bg-red-700 active:text-white active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                  type="button"
+                  onClick={() => setIsDialogOpen(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="w-full sm:w-auto select-none rounded bg-slate-800 py-2 px-4 text-center text-sm font-semibold text-white shadow-md shadow-slate-900/10 transition-all hover:shadow-lg hover:shadow-slate-900/20 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                  type="button"
+                  onClick={() => handleSave(selectedEmployee._id)}
+                >
+                  Save
+                </button>
               </div>
             </div>
           </div>
         )}
-
         {/* Add Employee Dialog */}
         {isAddDialogOpen && (
           <div
