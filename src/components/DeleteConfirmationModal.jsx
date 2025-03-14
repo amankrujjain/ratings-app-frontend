@@ -9,7 +9,7 @@ const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, ratingId }) => {
       id="deleteModal"
       tabIndex="-1"
       aria-hidden={!isOpen}
-      className="fixed inset-0 z-50 flex justify-center items-center w-full h-full bg-gray-500 bg-opacity-20 backdrop-blur-md overflow-y-auto overflow-x-hidden"
+      className="fixed inset-0 z-50 flex justify-center items-center w-full h-full bg-black bg-opacity-50 overflow-y-auto overflow-x-hidden"
     >
       <div className="relative p-4 w-full max-w-md h-full md:h-auto">
         {/* Modal content */}
