@@ -22,22 +22,21 @@ const AddEmployeeForm = ({ onSubmit, onCancel }) => {
     const fetchRoles = async () => {
       setLoadingRoles(true);
       try {
+        const token = localStorage.getItem('accessToken'); // Get token from localStorage
         const response = await fetch('http://localhost:5000/api/all-roles', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
+            Authorization: token ? `Bearer ${token}` : '', // Add token if available
           },
-          credentials: 'include', // Include cookies if needed for authentication
         });
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch roles');
-        }
-
+  
+        if (!response.ok) throw new Error('Failed to fetch roles');
+  
         const data = await response.json();
-        setRoles(data); // Assuming data is an array of role objects with _id and name
+        setRoles(data);
         if (data.length > 0) {
-          setFormData((prev) => ({ ...prev, role: data[0]._id })); // Set default role
+          setFormData((prev) => ({ ...prev, role: data[0]._id }));
         }
       } catch (error) {
         console.error('Error fetching roles:', error);
@@ -45,9 +44,10 @@ const AddEmployeeForm = ({ onSubmit, onCancel }) => {
         setLoadingRoles(false);
       }
     };
-
+  
     fetchRoles();
   }, []);
+  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

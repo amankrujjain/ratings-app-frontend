@@ -97,11 +97,7 @@ function Navbar() {
                       Manage Roles
                     </Link>
                     <Link
-<<<<<<< HEAD
-                      to="/manage-user"
-=======
                       to="/all-ratings" // Fixed from /manage-user
->>>>>>> 68c4124 (push with context error)
                       className="flex px-5 items-center py-6 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none transition duration-150 ease-in-out"
                     >
                       <svg
@@ -117,25 +113,14 @@ function Navbar() {
                         strokeLinejoin="round"
                       >
                         <path stroke="none" d="M0 0h24v24H0z" />
-<<<<<<< HEAD
-                        <path d="M12 7a5 5 0 0 1 5 5v3a2 2 0 0 1 -2 2h-6a2 2 0 0 1 -2 -2v-3a5 5 0 0 1 5 -5z" />
-                        <path d="M12 7v-3m-4 5h8" />
-                      </svg>
-                      Manage User
-=======
                         <path d="M12 4v3m-4 5h8m-10 6h12m-8-10v8" />
                       </svg>
                       All Ratings
->>>>>>> 68c4124 (push with context error)
                     </Link>
                   </>
                 ) : (
                   <Link
-<<<<<<< HEAD
-                    to="/view-reviews"
-=======
                     to="/all-ratings" // Consistent with route
->>>>>>> 68c4124 (push with context error)
                     className="flex px-5 items-center py-6 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none transition duration-150 ease-in-out"
                   >
                     <svg
@@ -153,11 +138,7 @@ function Navbar() {
                       <path stroke="none" d="M0 0h24v24H0z" />
                       <path d="M12 4v3m-4 5h8m-10 6h12m-8-10v8" />
                     </svg>
-<<<<<<< HEAD
-                    View Reviews
-=======
                     View Ratings
->>>>>>> 68c4124 (push with context error)
                   </Link>
                 )}
               </div>
@@ -304,11 +285,7 @@ function Navbar() {
                         </Link>
                       </li>
                       <li className="text-gray-800 pt-8">
-<<<<<<< HEAD
-                        <Link to="/manage-user" className="flex items-center">
-=======
                         <Link to="/all-ratings" className="flex items-center"> {/* Fixed from /all-reviews */}
->>>>>>> 68c4124 (push with context error)
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             className="w-7 h-7 md:w-9 md:h-9 text-gray-800"
@@ -320,32 +297,14 @@ function Navbar() {
                             strokeLinejoin="round"
                           >
                             <path stroke="none" d="M0 0h24v24H0z" />
-<<<<<<< HEAD
-                            <path d="M12 7a5 5 0 0 1 5 5v3a2 2 0 0 1 -2 2h-6a2 2 0 0 1 -2 -2v-3a5 5 0 0 1 5 -5z" />
-                            <path d="M12 7v-3m-4 5h8" />
-                          </svg>
-                          <p className="text-gray-800 xl:text-base text-base ml-3">Manage User</p>
-                        </Link>
-                      </li>
-                      <li className="text-gray-800 pt-8">
-                        <Link to="/all-reviews" className="flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24"><path fill="currentColor" d="M12.86 10.44L11 6.06l-1.86 4.39l-4.75.41L8 14l-1.08 4.63L11 16.17l4.09 2.46L14 14l3.61-3.14zm3.73 10.26L11 17.34L5.42 20.7l1.46-6.35l-4.92-4.28l6.49-.57l2.55-6l2.55 6l6.49.57l-4.92 4.27z"/></svg>
-                          <p className="text-gray-800 xl:text-base text-base ml-3">All Reviews</p>
-=======
                             <path d="M12 4v3m-4 5h8m-10 6h12m-8-10v8" />
                           </svg>
                           <p className="text-gray-800 xl:text-base text-base ml-3">All Ratings</p>
->>>>>>> 68c4124 (push with context error)
                         </Link>
                       </li>
                     </>
                   ) : (
                     <li className="text-gray-800 pt-8">
-<<<<<<< HEAD
-                      <Link to="/view-reviews" className="flex items-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24"><path fill="currentColor" d="M12.86 10.44L11 6.06l-1.86 4.39l-4.75.41L8 14l-1.08 4.63L11 16.17l4.09 2.46L14 14l3.61-3.14zm3.73 10.26L11 17.34L5.42 20.7l1.46-6.35l-4.92-4.28l6.49-.57l2.55-6l2.55 6l6.49.57l-4.92 4.27z"/></svg>
-                        <p className="text-gray-800 xl:text-base text-base ml-3">View Reviews</p>
-=======
                       <Link to="/all-ratings" className="flex items-center"> {/* Fixed from /view-reviews */}
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -361,7 +320,6 @@ function Navbar() {
                           <path d="M12 4v3m-4 5h8m-10 6h12m-8-10v8" />
                         </svg>
                         <p className="text-gray-800 xl:text-base text-base ml-3">View Ratings</p>
->>>>>>> 68c4124 (push with context error)
                       </Link>
                     </li>
                   )}

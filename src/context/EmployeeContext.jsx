@@ -1,7 +1,6 @@
-import React, { createContext, useState, useContext, useCallback, useMemo } from 'react';
+import React, { createContext, useState, useContext } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-import { UserContext } from './userContext'; // Assuming UserContext is in the same directory
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -12,196 +11,100 @@ export default function EmployeeContextProvider({ children }) {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [loading, setLoading] = useState(false);
 
-
-  const { user } = useContext(UserContext); // Get user from UserContext for auth state
   const navigate = useNavigate();
+  const token = localStorage.getItem('accessToken'); // Get token once here
+
+  // Helper function for API calls
+  const apiFetch = async (url, options = {}) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_URL}${url}`, {
+        ...options,
+        headers: {
+          ...options.headers,
+          ...(token ? { Authorization: `Bearer ${token}` } : {}), // Add token if exists
+          ...(options.body && !(options.body instanceof FormData) ? { 'Content-Type': 'application/json' } : {}),
+        },
+        credentials: 'include', // Keep cookies if needed
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Request failed');
+      }
+
+      return data;
+    } catch (error) {
+      toast.error(error.message);
+      if (error.message.includes('Token') || error.message.includes('Forbidden')) {
+        navigate('/login');
+      }
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Create Employee
-  const createEmployee = useCallback(async (employeeData) => {
-    setLoading(true);
-    try {
-      const response = await fetch(`${API_URL}/add-user`, {
-        method: 'POST',
-        credentials: 'include', // Send cookies
-        body: employeeData,
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to create employee');
-      }
-
-      const data = await response.json();
-      console.log('Create employee response:', data);
-      setEmployees((prev) => [...prev, data.user]);
-      toast.success('Employee created successfully!');
-      return data;
-    } catch (error) {
-      console.error('Create employee error:', error.message);
-      toast.error(error.message);
-      if (error.message.includes('Token') || error.message.includes('Forbidden')) {
-        navigate('/login');
-      }
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  }, [navigate]);
+  const createEmployee = async (employeeData) => {
+    const data = await apiFetch('/add-user', {
+      method: 'POST',
+      body: employeeData, // Could be FormData or JSON
+    });
+    setEmployees((prev) => [...prev, data.user]);
+    toast.success('Employee created successfully!');
+    return data;
+  };
 
   // Get All Employees
-  const getAllEmployees = useCallback(async () => {
-    setLoading(true);
-    try {
-      const response = await fetch(`${API_URL}/all-user`, {
-        method: 'GET',
-        credentials: 'include', // Send cookies
-      });
-
-      console.log('Get all employees status:', response.status);
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.log('Get all employees error response:', errorData);
-        throw new Error(errorData.message || 'Failed to fetch employees');
-      }
-
-      const data = await response.json();
-      console.log('Get all employees data:', data);
-      setEmployees(data || data || []); // Flexible: handle users, data, or array
-      return data || data;
-    } catch (error) {
-      console.error('Get all employees error:', error.message);
-      toast.error(error.message);
-      if (error.message.includes('Token') || error.message.includes('Forbidden')) {
-        navigate('/login');
-      }
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  }, [navigate]);
+  const getAllEmployees = async () => {
+    const data = await apiFetch('/all-user', { method: 'GET' });
+    setEmployees(data || []); // Fallback to empty array if no data
+    return data;
+  };
 
   // Get Employee by ID
-  const getEmployeeById = useCallback(async (id) => {
-    setLoading(true);
-    try {
-      const response = await fetch(`${API_URL}/get-user/${id}`, {
-        method: 'GET',
-        credentials: 'include', // Send cookies
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to fetch employee');
-      }
-
-      const data = await response.json();
-      console.log('Get employee by ID response:', data);
-      setSelectedEmployee(data);
-      return data;
-    } catch (error) {
-      console.error('Get employee by ID error:', error.message);
-      toast.error(error.message);
-      if (error.message.includes('Token') || error.message.includes('Forbidden')) {
-        navigate('/login');
-      }
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  }, [navigate]);
+  const getEmployeeById = async (id) => {
+    const data = await apiFetch(`/get-user/${id}`, { method: 'GET' });
+    setSelectedEmployee(data);
+    return data;
+  };
 
   // Update Employee
-  const updateEmployee = useCallback(async (id, employeeData) => {
-    setLoading(true);
-    try {
-      console.log('Sending update data:', Object.fromEntries(employeeData));
-  
-      const response = await fetch(`${API_URL}/update-user/${id}`, {
-        method: 'PUT',
-        credentials: 'include',
-        headers: employeeData instanceof FormData ? {} : { "Content-Type": "application/json" },
-        body: employeeData instanceof FormData ? employeeData : JSON.stringify(employeeData),
-      });
-  
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to update employee');
-      }
-  
-      const data = await response.json();
-      console.log('Update employee response:', data);
-  
-      if (!data.user) throw new Error("Invalid response from server");
-  
-      setEmployees((prev) =>
-        prev.map((emp) => (emp._id === id ? data.user : emp))
-      );
-  
-      setSelectedEmployee(data.user);
-      toast.success('Employee updated successfully!');
-    } catch (error) {
-      console.error('Update employee error:', error.message);
-      toast.error(error.message);
-      if (error.message.includes('Token') || error.message.includes('Forbidden')) {
-        navigate('/login');
-      }
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  }, [navigate]);
+  const updateEmployee = async (id, employeeData) => {
+    const data = await apiFetch(`/update-user/${id}`, {
+      method: 'PUT',
+      body: employeeData instanceof FormData ? employeeData : JSON.stringify(employeeData),
+    });
+    setEmployees((prev) => prev.map((emp) => (emp._id === id ? data.user : emp)));
+    setSelectedEmployee(data.user);
+    toast.success('Employee updated successfully!');
+    return data;
+  };
+
   // Delete Employee
-  const deleteEmployee = useCallback(async (id) => {
-    setLoading(true);
-    try {
-      const response = await fetch(`${API_URL}/delete-user/${id}`, {
-        method: 'DELETE',
-        credentials: 'include',
-      });
-  
-      const data = await response.json(); // Store response
-  
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to delete employee');
-      }
-  
-      console.log('Delete employee response:', data);
-      setEmployees((prev) => prev.filter((emp) => emp._id !== id));
-      if (selectedEmployee?._id === id) setSelectedEmployee(null);
-      toast.success('Employee deleted successfully!');
-      return { message: 'Employee deleted' };
-    } catch (error) {
-      console.error('Delete employee error:', error.message);
-      toast.error(error.message);
-      if (error.message.includes('Token') || error.message.includes('Forbidden')) {
-        navigate('/login');
-      }
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  }, [navigate, selectedEmployee]);
-  
+  const deleteEmployee = async (id) => {
+    const data = await apiFetch(`/delete-user/${id}`, { method: 'DELETE' });
+    setEmployees((prev) => prev.filter((emp) => emp._id !== id));
+    if (selectedEmployee?._id === id) setSelectedEmployee(null);
+    toast.success('Employee deleted successfully!');
+    return data;
+  };
 
-  const contextValue = useMemo(
-    () => ({
-      employees,
-      selectedEmployee,
-      loading,
-      createEmployee,
-      getAllEmployees,
-      getEmployeeById,
-      updateEmployee,
-      deleteEmployee,
-    }),
-    [employees, selectedEmployee, loading, createEmployee, getAllEmployees, getEmployeeById, updateEmployee, deleteEmployee]
-  );
+  // Context value
+  const value = {
+    employees,
+    selectedEmployee,
+    loading,
+    createEmployee,
+    getAllEmployees,
+    getEmployeeById,
+    updateEmployee,
+    deleteEmployee,
+  };
 
-  return (
-    <EmployeeContext.Provider value={contextValue}>
-      {children}
-    </EmployeeContext.Provider>
-  );
+  return <EmployeeContext.Provider value={value}>{children}</EmployeeContext.Provider>;
 }
 
 export const useEmployeeContext = () => {
