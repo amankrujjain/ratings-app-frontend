@@ -97,30 +97,31 @@ function Navbar() {
                       Manage Roles
                     </Link>
                     <Link
-                      to="/all-ratings" // Fixed from /manage-user
+                      to="/all-ratings"
                       className="flex px-5 items-center py-6 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none transition duration-150 ease-in-out"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        className="mr-2"
-                        width={20}
-                        height={20}
+                        className=" text-gray-800"
                         viewBox="0 0 24 24"
-                        strokeWidth="1.5"
-                        stroke="currentColor"
+                        height={20}
+                        width={20}
                         fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                       >
                         <path stroke="none" d="M0 0h24v24H0z" />
-                        <path d="M12 4v3m-4 5h8m-10 6h12m-8-10v8" />
+                        <path d="M12 3l3.09 6.26L21 10.27l-5 4.87 1.18 6.9L12 17.75l-5.18 4.29L8 15.14 3 10.27l5.91-.91L12 3z" />
                       </svg>
+
                       All Ratings
                     </Link>
                   </>
                 ) : (
                   <Link
-                    to="/all-ratings" // Consistent with route
+                    to="/all-ratings"
                     className="flex px-5 items-center py-6 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none transition duration-150 ease-in-out"
                   >
                     <svg
@@ -141,6 +142,29 @@ function Navbar() {
                     View Ratings
                   </Link>
                 )}
+                {/* Profile Link for All Users */}
+                <Link
+                  to="/profile"
+                  className="flex px-5 items-center py-6 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none transition duration-150 ease-in-out"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="mr-2"
+                    width={20}
+                    height={20}
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.5"
+                    stroke="currentColor"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" />
+                    <circle cx={12} cy={7} r={4} />
+                    <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+                  </svg>
+                  Profile
+                </Link>
               </div>
 
               {/* Logout Button */}
@@ -199,9 +223,8 @@ function Navbar() {
 
         {/* Mobile Sidebar */}
         <div
-          className={`w-64 xl:hidden h-full absolute z-40 top-0 bg-white shadow transition duration-150 ease-in-out ${
-            isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
-          }`}
+          className={`w-64 xl:hidden h-full absolute z-40 top-0 bg-white shadow transition duration-150 ease-in-out ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+            }`}
         >
           <div className="px-6 h-full">
             <div className="flex flex-col justify-between h-full">
@@ -285,27 +308,28 @@ function Navbar() {
                         </Link>
                       </li>
                       <li className="text-gray-800 pt-8">
-                        <Link to="/all-ratings" className="flex items-center"> {/* Fixed from /all-reviews */}
+                        <Link to="/all-ratings" className="flex items-center">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             className="w-7 h-7 md:w-9 md:h-9 text-gray-800"
                             viewBox="0 0 24 24"
-                            strokeWidth="1.5"
-                            stroke="currentColor"
                             fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
                             strokeLinecap="round"
                             strokeLinejoin="round"
                           >
                             <path stroke="none" d="M0 0h24v24H0z" />
-                            <path d="M12 4v3m-4 5h8m-10 6h12m-8-10v8" />
+                            <path d="M12 3l3.09 6.26L21 10.27l-5 4.87 1.18 6.9L12 17.75l-5.18 4.29L8 15.14 3 10.27l5.91-.91L12 3z" />
                           </svg>
+
                           <p className="text-gray-800 xl:text-base text-base ml-3">All Ratings</p>
                         </Link>
                       </li>
                     </>
                   ) : (
                     <li className="text-gray-800 pt-8">
-                      <Link to="/all-ratings" className="flex items-center"> {/* Fixed from /view-reviews */}
+                      <Link to="/all-ratings" className="flex items-center">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           className="w-6 h-6 md:w-8 md:h-8 text-gray-800"
@@ -323,6 +347,26 @@ function Navbar() {
                       </Link>
                     </li>
                   )}
+                  {/* Profile Link for All Users in Mobile */}
+                  <li className="text-gray-800 pt-8">
+                    <Link to="/profile" className="flex items-center">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="w-6 h-6 md:w-8 md:h-8 text-gray-800"
+                        viewBox="0 0 24 24"
+                        strokeWidth="1.5"
+                        stroke="currentColor"
+                        fill="none"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path stroke="none" d="M0 0h24v24H0z" />
+                        <circle cx={12} cy={7} r={4} />
+                        <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+                      </svg>
+                      <p className="text-gray-800 xl:text-base text-base ml-3">Profile</p>
+                    </Link>
+                  </li>
                   <li className="text-gray-800 pt-8">
                     <button onClick={handleLogout} className="flex items-center">
                       <svg

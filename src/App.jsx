@@ -10,6 +10,7 @@ import { UserContext } from "./context/userContext"; // Only import UserContext 
 import EmployeeManagement from "./pages/EmployeeManagement";
 import RatingsDisplay from "./pages/RatingsDisplay";
 import EmployeeReviews from "./pages/EmployeeReviews";
+import RolesTable from "./pages/RolesTable";
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useContext(UserContext);
@@ -44,10 +45,10 @@ function App() {
           }
         />
         <Route
-          path="/about"
+          path="/manage-roles"
           element={
             <ProtectedRoute>
-              <div>About Page</div>
+              <RolesTable/>
             </ProtectedRoute>
           }
         />

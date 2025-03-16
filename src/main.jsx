@@ -3,8 +3,9 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App.jsx';
-import UserContextProvider from './context/UserContext.jsx';
+import UserContextProvider from './context/userContext.jsx';
 import EmployeeContextProvider from './context/EmployeeContext.jsx';
+import {RoleProvider} from './context/RoleContext.jsx'
 import { RatingProvider } from './context/RatingContext.jsx'; // Import RatingProvider
 import './index.css';
 
@@ -14,7 +15,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <UserContextProvider>
         <EmployeeContextProvider>
           <RatingProvider>
-            <App />
+            <RoleProvider>
+              <App />
+            </RoleProvider>
           </RatingProvider>
         </EmployeeContextProvider>
       </UserContextProvider>
