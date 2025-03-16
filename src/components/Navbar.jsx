@@ -1,7 +1,7 @@
 // components/Navbar.jsx
 import { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { UserContext } from '../context/UserContext';
+import { UserContext } from '../context/userContext';
 
 function Navbar() {
   const { user, logout, setUser } = useContext(UserContext);

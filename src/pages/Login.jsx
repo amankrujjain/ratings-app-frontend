@@ -1,6 +1,7 @@
 import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/userContext';
+import logo from '../assets/logo-removebg.png';
 
 function Login() {
   const { login } = useContext(UserContext);
@@ -32,10 +33,10 @@ function Login() {
 
   return (
     <div className="min-h-screen flex">
-      <div className="hidden md:flex md:w-1/2 bg-gray-900 text-white flex-col justify-center items-center p-8">
+      <div className="hidden md:flex md:w-1/2 text-black flex-col justify-center items-center p-8">
         <div className="text-center">
           <img
-            src="https://via.placeholder.com/150"
+            src={logo}
             alt="Company Logo"
             className="mb-6 mx-auto"
           />
@@ -90,12 +91,7 @@ function Login() {
               {loading ? 'Logging in...' : 'Login'}
             </button>
           </form>
-          <p className="mt-4 text-center text-sm">
-            Don’t have an account?{' '}
-            <a href="/signup" className="text-indigo-600 hover:underline">
-              Sign Up
-            </a>
-          </p>
+          
         </div>
       </div>
     </div>
