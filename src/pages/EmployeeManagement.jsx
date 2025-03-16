@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useEmployeeContext } from '../context/EmployeeContext';
 import AddEmployeeForm from '../components/AddEmployee';
+import DeleteConfirmationModal from '../components/DeleteConfirmationModal'; // Keep only the import
 
 const BASE_URL = 'http://localhost:5000';
 
@@ -18,6 +19,8 @@ const EmployeeManagement = () => {
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [employeeToDelete, setEmployeeToDelete] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
   const [editEmployee, setEditEmployee] = useState({
@@ -27,7 +30,7 @@ const EmployeeManagement = () => {
     designation: '',
     isActive: '',
     role: '',
-    employeePhoto: null, // For file input
+    employeePhoto: null,
     contactNo: '',
     department: '',
   });
@@ -101,7 +104,7 @@ const EmployeeManagement = () => {
     formData.append('contactNo', editEmployee.contactNo);
     formData.append('department', editEmployee.department);
     if (editEmployee.employeePhoto) {
-      formData.append('employeePhoto', editEmployee.employeePhoto); // File
+      formData.append('employeePhoto', editEmployee.employeePhoto);
     }
 
     updateEmployee(id, formData)
@@ -128,21 +131,29 @@ const EmployeeManagement = () => {
   };
 
   const handleDelete = (id) => {
-    if (window.confirm('Are you sure you want to delete this employee?')) {
-      deleteEmployee(id)
-        .then(() => {
-          console.log(`Employee with ID ${id} deleted successfully`);
-          getAllEmployees();
-          if (currentEmployees.length === 1 && currentPage > 1) {
-            setCurrentPage((prev) => prev - 1);
-          }
-        })
-        .catch((error) => {
-          console.error('Failed to delete employee:', error);
-          alert('Failed to delete employee!');
-        });
-    }
-  }
+    setEmployeeToDelete(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDelete = (id) => {
+    deleteEmployee(id)
+      .then(() => {
+        console.log(`Employee with ID ${id} deleted successfully`);
+        getAllEmployees();
+        if (currentEmployees.length === 1 && currentPage > 1) {
+          setCurrentPage((prev) => prev - 1);
+        }
+        setIsDeleteModalOpen(false);
+        setEmployeeToDelete(null);
+      })
+      .catch((error) => {
+        console.error('Failed to delete employee:', error);
+        alert('Failed to delete employee!');
+        setIsDeleteModalOpen(false);
+        setEmployeeToDelete(null);
+      });
+  };
+
   if (loading) return <div>Loading...</div>;
   console.log('Rendering employees:', employees);
 
@@ -520,7 +531,7 @@ const EmployeeManagement = () => {
                     name="employeePhoto"
                     onChange={handleFileChange}
                     accept="image/png, image/jpeg, image/jpg, image/webp"
-                    className="w-full h-10 bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md"
+                    className="pl-5 py-2 w-full h-14 bg-transparent text-slate-700 text-sm border border-slate-200 rounded px-4 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200"
                   />
                 </div>
               </div>
@@ -545,6 +556,7 @@ const EmployeeManagement = () => {
             </div>
           </div>
         )}
+
         {/* Add Employee Dialog */}
         {isAddDialogOpen && (
           <div
@@ -562,6 +574,17 @@ const EmployeeManagement = () => {
             </div>
           </div>
         )}
+
+        {/* Delete Confirmation Modal */}
+        <DeleteConfirmationModal
+          isOpen={isDeleteModalOpen}
+          onClose={() => {
+            setIsDeleteModalOpen(false);
+            setEmployeeToDelete(null);
+          }}
+          onConfirm={confirmDelete}
+          ratingId={employeeToDelete}
+        />
       </div>
     </div>
   );

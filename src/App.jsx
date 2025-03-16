@@ -25,7 +25,7 @@ function App() {
     <div className="App">
       <Navbar />
       <Routes>
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={user && user.isLogin ? <Navigate to="/profile" /> : <Login />} />
         <Route
           path="/login"
           element={user && user.isLogin ? <Navigate to="/profile" /> : <Login />}

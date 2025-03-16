@@ -213,7 +213,7 @@ const AddEmployeeForm = ({ onSubmit, onCancel }) => {
                 type="file"
                 name="employeePhoto"
                 onChange={handleFileChange}
-                className="w-full h-14 bg-transparent text-slate-700 text-sm border border-slate-200 rounded px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200"
+                className="pl-5 py-2 w-full h-14 bg-transparent text-slate-700 text-sm border border-slate-200 rounded px-4 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200"
                 accept="image/*"
               />
             </div>
