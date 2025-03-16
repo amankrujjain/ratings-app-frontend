@@ -9,6 +9,7 @@ import Profile from "./pages/Profile";
 import { UserContext } from "./context/userContext"; // Only import UserContext for useContext
 import EmployeeManagement from "./pages/EmployeeManagement";
 import RatingsDisplay from "./pages/RatingsDisplay";
+import EmployeeReviews from "./pages/EmployeeReviews";
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useContext(UserContext);
@@ -67,10 +68,10 @@ function App() {
           }
         />
         <Route
-          path="/performance"
+          path="/employee-reviews/:employeeId"
           element={
             <ProtectedRoute>
-              <div>Performance Page</div>
+              <EmployeeReviews/>
             </ProtectedRoute>
           }
         />
