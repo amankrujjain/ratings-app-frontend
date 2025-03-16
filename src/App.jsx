@@ -6,7 +6,7 @@ import SignUp from "./pages/SignUp";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import ForgotPassword from "./components/ForgotPassword"; // Import Forgot Password Page
-import { UserContext } from "./context/userContext"; 
+import { UserContext } from "./context/userContext";
 import EmployeeManagement from "./pages/EmployeeManagement";
 import RatingsDisplay from "./pages/RatingsDisplay";
 import EmployeeReviews from "./pages/EmployeeReviews";
@@ -77,8 +77,14 @@ function App() {
           }
         />
         {/* Added Forgot Password Route */}
-        <Route path="/reset-password" element={<ForgotPassword />} />
-
+        <Route
+          path="/reset-password"
+          element={
+            <ProtectedRoute>
+              <ForgotPassword />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="*"
           element={

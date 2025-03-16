@@ -1,6 +1,8 @@
 import { useContext } from 'react';
 import { UserContext } from '../context/userContext';
 import { Link } from 'react-router-dom';
+const BASE_URL = 'http://localhost:5000';
+
 
 function Profile() {
   const { user } = useContext(UserContext);
@@ -18,7 +20,11 @@ function Profile() {
         <div className="flex flex-col items-center mb-6">
           <div className="w-32 h-32 rounded-full overflow-hidden mb-4 border-4 border-indigo-600">
             <img
-              src={user.employeePhoto || 'https://via.placeholder.com/150'}
+              src={
+                user.employeePhoto
+                  ? `${BASE_URL}/${user.employeePhoto.replace(/\\/g, '/')}`
+                  : 'https://via.placeholder.com/40'
+              }
               alt="Profile"
               className="w-full h-full object-cover"
             />

@@ -1,4 +1,5 @@
 import { createContext, useState, useContext } from "react";
+import { toast } from "react-toastify"; // Import toast from react-toastify
 
 const AuthContext = createContext();
 
@@ -27,9 +28,17 @@ export const AuthProvider = ({ children }) => {
       if (!response.ok) throw new Error(data.message || "Something went wrong");
 
       setMessage(data.message);
+      toast.success(data.message || "Operation successful!", {
+        position: "top-right",
+        autoClose: 3000,
+      }); // Show success toast
       return data;
     } catch (err) {
       setError(err.message);
+      toast.error(err.message || "An error occurred!", {
+        position: "top-right",
+        autoClose: 3000,
+      }); // Show error toast
       return null;
     } finally {
       setLoading(false);
@@ -52,7 +61,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ forgotPassword, verifyOTP, resetPassword, loading, error, message }}>
+    <AuthContext.Provider
+      value={{ forgotPassword, verifyOTP, resetPassword, loading, error, message }}
+    >
       {children}
     </AuthContext.Provider>
   );
