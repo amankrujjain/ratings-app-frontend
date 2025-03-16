@@ -1,4 +1,3 @@
-// App.jsx
 import { Routes, Route, Navigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { useContext } from "react";
@@ -6,7 +5,8 @@ import Navbar from "./components/Navbar";
 import SignUp from "./pages/SignUp";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile";
-import { UserContext } from "./context/userContext"; // Only import UserContext for useContext
+import ForgotPassword from "./components/ForgotPassword"; // Import Forgot Password Page
+import { UserContext } from "./context/userContext"; 
 import EmployeeManagement from "./pages/EmployeeManagement";
 import RatingsDisplay from "./pages/RatingsDisplay";
 import EmployeeReviews from "./pages/EmployeeReviews";
@@ -14,7 +14,7 @@ import RolesTable from "./pages/RolesTable";
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useContext(UserContext);
-  console.log('ProtectedRoute - loading:', loading, 'user:', user);
+  console.log("ProtectedRoute - loading:", loading, "user:", user);
   if (loading) return <div>Loading...</div>;
   if (!user || !user.isLogin) return <Navigate to="/login" />;
   return children;
@@ -48,7 +48,7 @@ function App() {
           path="/manage-roles"
           element={
             <ProtectedRoute>
-              <RolesTable/>
+              <RolesTable />
             </ProtectedRoute>
           }
         />
@@ -72,10 +72,13 @@ function App() {
           path="/employee-reviews/:employeeId"
           element={
             <ProtectedRoute>
-              <EmployeeReviews/>
+              <EmployeeReviews />
             </ProtectedRoute>
           }
         />
+        {/* Added Forgot Password Route */}
+        <Route path="/reset-password" element={<ForgotPassword />} />
+
         <Route
           path="*"
           element={

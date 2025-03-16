@@ -82,12 +82,15 @@ function Profile() {
 
           {/* Reset Password Link */}
           <div className="text-center mt-6">
+          <p className="mt-1 p-2 w-full bg-gray-50 border border-gray-200 rounded-md text-gray-800">
+            Forget Password ? Click here to:
             <Link
               to="/reset-password"
               className="text-sm font-medium text-blue-600 hover:underline"
-            >
+              >
               Reset Password
             </Link>
+              </p>
           </div>
         </div>
       </div>
