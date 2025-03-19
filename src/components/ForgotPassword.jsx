@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { useAuth } from "../context/AuthContext";
 
 const ForgotPassword = () => {
-  const { forgotPassword, verifyOTP, resetPassword, loading, error, message } = useAuth();
+  const { forgotPassword, verifyOTP, resetPassword, loading } = useAuth();
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
@@ -22,7 +22,7 @@ const ForgotPassword = () => {
 
   const handleResetPassword = async () => {
     const response = await resetPassword(email, otp, newPassword);
-    if (response) navigate("/profile"); // Navigate to /profile on success
+    if (response) navigate("/profile");
   };
 
   const renderStepIcon = (currentStep, targetStep) => {
