@@ -11,6 +11,7 @@ import EmployeeManagement from "./pages/EmployeeManagement";
 import RatingsDisplay from "./pages/RatingsDisplay";
 import EmployeeReviews from "./pages/EmployeeReviews";
 import RolesTable from "./pages/RolesTable";
+import RatingSubmissionForm from "./components/RatingsSubmissionForm";
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useContext(UserContext);
@@ -25,8 +26,10 @@ function App() {
 
   return (
     <div className="App">
+
       <Navbar />
       <Routes>
+        <Route path="/submit-review/:employeeId" element={<RatingSubmissionForm/>}/>
         <Route path="/" element={user && user.isLogin ? <Navigate to="/profile" /> : <Login />} />
         <Route
           path="/login"
