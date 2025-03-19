@@ -118,6 +118,26 @@ export const RatingProvider = ({ children }) => {
       setLoading(false);
     }
   }, [fetchWithAuth]);
+  const getEmployeeRatingsID = useCallback(async (employeeId) => {
+    setLoading(true);
+    try {
+      const response = await fetchWithAuth(`${API_BASE_URL}/ratings/employee-ratings/${employeeId}`, {
+        method: 'GET',
+      });
+
+      const data = await response.json();
+      console.log('getEmployeeRatingsID - Response:', data);
+      setRatings(Array.isArray(data) ? data : []);
+      return data;
+    } catch (err) {
+      console.error('getEmployeeRatingsID - Error:', err.message);
+      setError(err.message);
+      toast.error(err.message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, [fetchWithAuth]);
 
   // Get Employee Ratings
   const getEmployeeRatings = useCallback(async (employeeId) => {
@@ -199,6 +219,7 @@ export const RatingProvider = ({ children }) => {
         submitRating,
         getAllRatings,
         getEmployeeRatings,
+        getEmployeeRatingsID,
         editRating,
         deleteRating,
         setError,

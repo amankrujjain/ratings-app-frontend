@@ -1,27 +1,28 @@
-// components/Navbar.jsx
-import { useContext, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { UserContext } from '../context/userContext';
+// src/components/Navbar.jsx
+import { useContext, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { UserContext } from "../context/userContext";
 
 function Navbar() {
   const { user, logout, setUser } = useContext(UserContext);
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  console.log('Navbar - User:', user); // Debug user state
+  console.log("Navbar - User:", user); // Debug user state
 
   const handleLogout = async () => {
-    console.log('Navbar - Logging out...');
+    console.log("Navbar - Logging out...");
     await logout();
     setUser(null);
-    localStorage.removeItem('accessToken'); // Ensure tokens are cleared
-    localStorage.removeItem('refreshToken');
-    navigate('/login');
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    navigate("/login");
   };
 
   if (!user) return null; // Hide navbar if not logged in
 
-  const isAdminOrSubadmin = user.role?.name === 'admin' || user.role?.name === 'subadmin';
+  const isAdminOrSubadmin = user.role?.name === "admin" || user.role?.name === "subadmin";
+  const myReviewsPath = `/ratings/employee/${user._id}`; // Assuming user._id is the employeeId
 
   return (
     <>
@@ -49,32 +50,32 @@ function Navbar() {
             {/* Links */}
             <div className="flex items-center">
               <div className="hidden xl:flex md:mr-6 xl:mr-16">
-                <Link
-                  to="/dashboard"
-                  className="flex px-5 items-center py-6 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none transition duration-150 ease-in-out"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="mr-2"
-                    width={20}
-                    height={20}
-                    viewBox="0 0 24 24"
-                    strokeWidth="1.5"
-                    stroke="currentColor"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path stroke="none" d="M0 0h24v24H0z" />
-                    <rect x={4} y={4} width={6} height={6} rx={1} />
-                    <rect x={14} y={4} width={6} height={6} rx={1} />
-                    <rect x={4} y={14} width={6} height={6} rx={1} />
-                    <rect x={14} y={14} width={6} height={6} rx={1} />
-                  </svg>
-                  Dashboard
-                </Link>
                 {isAdminOrSubadmin ? (
                   <>
+                    <Link
+                      to="/dashboard"
+                      className="flex px-5 items-center py-6 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none transition duration-150 ease-in-out"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="mr-2"
+                        width={20}
+                        height={20}
+                        viewBox="0 0 24 24"
+                        strokeWidth="1.5"
+                        stroke="currentColor"
+                        fill="none"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path stroke="none" d="M0 0h24v24H0z" />
+                        <rect x={4} y={4} width={6} height={6} rx={1} />
+                        <rect x={14} y={4} width={6} height={6} rx={1} />
+                        <rect x={4} y={14} width={6} height={6} rx={1} />
+                        <rect x={14} y={14} width={6} height={6} rx={1} />
+                      </svg>
+                      Dashboard
+                    </Link>
                     <Link
                       to="/manage-roles"
                       className="flex px-5 items-center py-6 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none transition duration-150 ease-in-out"
@@ -102,26 +103,25 @@ function Navbar() {
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        className=" text-gray-800"
-                        viewBox="0 0 24 24"
-                        height={20}
+                        className="mr-2"
                         width={20}
-                        fill="none"
-                        stroke="currentColor"
+                        height={20}
+                        viewBox="0 0 24 24"
                         strokeWidth="1.5"
+                        stroke="currentColor"
+                        fill="none"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                       >
                         <path stroke="none" d="M0 0h24v24H0z" />
                         <path d="M12 3l3.09 6.26L21 10.27l-5 4.87 1.18 6.9L12 17.75l-5.18 4.29L8 15.14 3 10.27l5.91-.91L12 3z" />
                       </svg>
-
                       All Ratings
                     </Link>
                   </>
                 ) : (
                   <Link
-                    to="/all-ratings"
+                    to={myReviewsPath}
                     className="flex px-5 items-center py-6 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none transition duration-150 ease-in-out"
                   >
                     <svg
@@ -137,9 +137,9 @@ function Navbar() {
                       strokeLinejoin="round"
                     >
                       <path stroke="none" d="M0 0h24v24H0z" />
-                      <path d="M12 4v3m-4 5h8m-10 6h12m-8-10v8" />
+                      <path d="M12 3l3.09 6.26L21 10.27l-5 4.87 1.18 6.9L12 17.75l-5.18 4.29L8 15.14 3 10.27l5.91-.91L12 3z" />
                     </svg>
-                    View Ratings
+                    My Reviews
                   </Link>
                 )}
                 {/* Profile Link for All Users */}
@@ -165,16 +165,15 @@ function Navbar() {
                   </svg>
                   Profile
                 </Link>
-              </div>
-
-              {/* Logout Button */}
-              <div className="hidden xl:flex items-center">
-                <button
-                  onClick={handleLogout}
-                  className="focus:outline-none bg-gray-100 border-gray-300 border transition duration-150 ease-in-out hover:bg-gray-300 rounded text-gray-600 px-5 py-2 text-xs"
-                >
-                  Logout
-                </button>
+                {/* Logout Button for All Users */}
+                <div className="hidden xl:flex items-center">
+                  <button
+                    onClick={handleLogout}
+                    className="focus:outline-none bg-gray-100 border-gray-300 border transition duration-150 ease-in-out hover:bg-gray-300 rounded text-gray-600 px-5 py-2 text-xs"
+                  >
+                    Logout
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -223,7 +222,7 @@ function Navbar() {
 
         {/* Mobile Sidebar */}
         <div
-          className={`w-64 xl:hidden h-full absolute z-40 top-0 bg-white shadow transition duration-150 ease-in-out ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+          className={`w-64 xl:hidden h-full absolute z-40 top-0 bg-white shadow transition duration-150 ease-in-out ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
             }`}
         >
           <div className="px-6 h-full">
@@ -266,29 +265,29 @@ function Navbar() {
                   </button>
                 </div>
                 <ul className="mt-6">
-                  <li className="text-gray-800 pt-8">
-                    <Link to="/dashboard" className="flex items-center">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="w-6 h-6 md:w-8 md:h-8 text-indigo-700"
-                        viewBox="0 0 24 24"
-                        strokeWidth="1.5"
-                        stroke="currentColor"
-                        fill="none"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path stroke="none" d="M0 0h24v24H0z" />
-                        <rect x={4} y={4} width={6} height={6} rx={1} />
-                        <rect x={14} y={4} width={6} height={6} rx={1} />
-                        <rect x={4} y={14} width={6} height={6} rx={1} />
-                        <rect x={14} y={14} width={6} height={6} rx={1} />
-                      </svg>
-                      <p className="text-indigo-700 xl:text-base text-base ml-3">Dashboard</p>
-                    </Link>
-                  </li>
                   {isAdminOrSubadmin ? (
                     <>
+                      <li className="text-gray-800 pt-8">
+                        <Link to="/dashboard" className="flex items-center">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="w-6 h-6 md:w-8 md:h-8 text-indigo-700"
+                            viewBox="0 0 24 24"
+                            strokeWidth="1.5"
+                            stroke="currentColor"
+                            fill="none"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path stroke="none" d="M0 0h24v24H0z" />
+                            <rect x={4} y={4} width={6} height={6} rx={1} />
+                            <rect x={14} y={4} width={6} height={6} rx={1} />
+                            <rect x={4} y={14} width={6} height={6} rx={1} />
+                            <rect x={14} y={14} width={6} height={6} rx={1} />
+                          </svg>
+                          <p className="text-indigo-700 xl:text-base text-base ml-3">Dashboard</p>
+                        </Link>
+                      </li>
                       <li className="text-gray-800 pt-8">
                         <Link to="/manage-roles" className="flex items-center">
                           <svg
@@ -311,28 +310,27 @@ function Navbar() {
                         <Link to="/all-ratings" className="flex items-center">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
-                            className="w-7 h-7 md:w-9 md:h-9 text-gray-800"
+                            className="w-6 h-6 md:w-8 md:h-8 text-gray-800"
                             viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
                             strokeWidth="1.5"
+                            stroke="currentColor"
+                            fill="none"
                             strokeLinecap="round"
                             strokeLinejoin="round"
                           >
                             <path stroke="none" d="M0 0h24v24H0z" />
                             <path d="M12 3l3.09 6.26L21 10.27l-5 4.87 1.18 6.9L12 17.75l-5.18 4.29L8 15.14 3 10.27l5.91-.91L12 3z" />
                           </svg>
-
                           <p className="text-gray-800 xl:text-base text-base ml-3">All Ratings</p>
                         </Link>
                       </li>
                     </>
                   ) : (
                     <li className="text-gray-800 pt-8">
-                      <Link to="/all-ratings" className="flex items-center">
+                      <Link to={myReviewsPath} className="flex items-center">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
-                          className="w-6 h-6 md:w-8 md:h-8 text-gray-800"
+                          className="w-6 h-6 md:w-8 md:h-8 text-indigo-700"
                           viewBox="0 0 24 24"
                           strokeWidth="1.5"
                           stroke="currentColor"
@@ -341,9 +339,9 @@ function Navbar() {
                           strokeLinejoin="round"
                         >
                           <path stroke="none" d="M0 0h24v24H0z" />
-                          <path d="M12 4v3m-4 5h8m-10 6h12m-8-10v8" />
+                          <path d="M12 3l3.09 6.26L21 10.27l-5 4.87 1.18 6.9L12 17.75l-5.18 4.29L8 15.14 3 10.27l5.91-.91L12 3z" />
                         </svg>
-                        <p className="text-gray-800 xl:text-base text-base ml-3">View Ratings</p>
+                        <p className="text-indigo-700 xl:text-base text-base ml-3">My Reviews</p>
                       </Link>
                     </li>
                   )}

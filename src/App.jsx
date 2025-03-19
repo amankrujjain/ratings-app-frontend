@@ -11,6 +11,7 @@ import EmployeeManagement from "./pages/EmployeeManagement";
 import RatingsDisplay from "./pages/RatingsDisplay";
 import EmployeeReviews from "./pages/EmployeeReviews";
 import RolesTable from "./pages/RolesTable";
+import SingleEmployeeRating from "./components/SingleEmployeeRatings";
 import RatingSubmissionForm from "./components/RatingsSubmissionForm";
 
 function ProtectedRoute({ children }) {
@@ -47,6 +48,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+        
         <Route
           path="/manage-roles"
           element={
@@ -79,6 +81,14 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+            path="/ratings/employee/:employeeId"
+            element={
+              <ProtectedRoute>
+                <SingleEmployeeRating />
+              </ProtectedRoute>
+            }
+          />
         {/* Added Forgot Password Route */}
         <Route
           path="/reset-password"
