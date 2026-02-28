@@ -76,7 +76,7 @@ function Navbar() {
                       </svg>
                       Dashboard
                     </Link>
-                    <Link
+                    {/* <Link
                       to="/manage-roles"
                       className="flex px-5 items-center py-6 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none transition duration-150 ease-in-out"
                     >
@@ -96,7 +96,7 @@ function Navbar() {
                         <path d="M4 7h3a1 1 0 0 0 1 -1v-1a2 2 0 0 1 4 0v1a1 1 0 0 0 1 1h3a1 1 0 0 1 1 1v3a1 1 0 0 0 1 1h1a2 2 0 0 1 0 4h-1a1 1 0 0 0 -1 1v3a1 1 0 0 1 -1 1h-3a1 1 0 0 1 -1 -1v-1a2 2 0 0 0 -4 0v1a1 1 0 0 1 -1 1h-3a1 1 0 0 1 -1 -1v-3a1 1 0 0 1 1 -1h1a2 2 0 0 0 0 -4h-1a1 1 0 0 1 -1 -1v-3a1 1 0 0 1 1 -1" />
                       </svg>
                       Manage Roles
-                    </Link>
+                    </Link> */}
                     <Link
                       to="/all-ratings"
                       className="flex px-5 items-center py-6 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none transition duration-150 ease-in-out"
@@ -118,29 +118,44 @@ function Navbar() {
                       </svg>
                       All Ratings
                     </Link>
+                    <Link
+                      to="/incentives"
+                      className="flex px-5 items-center py-6 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none transition duration-150 ease-in-out"
+                    >
+                      💰 Incentives
+                    </Link>
                   </>
                 ) : (
-                  <Link
-                    to={myReviewsPath}
-                    className="flex px-5 items-center py-6 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none transition duration-150 ease-in-out"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="mr-2"
-                      width={20}
-                      height={20}
-                      viewBox="0 0 24 24"
-                      strokeWidth="1.5"
-                      stroke="currentColor"
-                      fill="none"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path stroke="none" d="M0 0h24v24H0z" />
-                      <path d="M12 3l3.09 6.26L21 10.27l-5 4.87 1.18 6.9L12 17.75l-5.18 4.29L8 15.14 3 10.27l5.91-.91L12 3z" />
-                    </svg>
-                    My Reviews
-                  </Link>
+                    <>
+                      <Link
+                        to={myReviewsPath}
+                        className="flex px-5 items-center py-6 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none transition duration-150 ease-in-out"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="mr-2"
+                          width={20}
+                          height={20}
+                          viewBox="0 0 24 24"
+                          strokeWidth="1.5"
+                          stroke="currentColor"
+                          fill="none"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path stroke="none" d="M0 0h24v24H0z" />
+                          <path d="M12 3l3.09 6.26L21 10.27l-5 4.87 1.18 6.9L12 17.75l-5.18 4.29L8 15.14 3 10.27l5.91-.91L12 3z" />
+                        </svg>
+                        My Reviews
+                      </Link>
+
+                      <Link
+                        to="/wallet"
+                        className="flex px-5 items-center py-6 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none transition duration-150 ease-in-out"
+                      >
+                        💰 My Wallet
+                      </Link>
+                    </>
                 )}
                 {/* Profile Link for All Users */}
                 <Link
@@ -288,7 +303,7 @@ function Navbar() {
                           <p className="text-indigo-700 xl:text-base text-base ml-3">Dashboard</p>
                         </Link>
                       </li>
-                      <li className="text-gray-800 pt-8">
+                      {/* <li className="text-gray-800 pt-8">
                         <Link to="/manage-roles" className="flex items-center">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -305,7 +320,7 @@ function Navbar() {
                           </svg>
                           <p className="text-gray-800 xl:text-base text-base ml-3">Manage Roles</p>
                         </Link>
-                      </li>
+                      </li> */}
                       <li className="text-gray-800 pt-8">
                         <Link to="/all-ratings" className="flex items-center">
                           <svg
@@ -324,26 +339,42 @@ function Navbar() {
                           <p className="text-gray-800 xl:text-base text-base ml-3">All Ratings</p>
                         </Link>
                       </li>
+                      <li className="text-gray-800 pt-8">
+                        <Link to="/incentives" className="flex items-center">
+                          <p className="text-gray-800 xl:text-base text-base ml-3">
+                            💰 Incentives
+                          </p>
+                        </Link>
+                      </li>
                     </>
                   ) : (
-                    <li className="text-gray-800 pt-8">
-                      <Link to={myReviewsPath} className="flex items-center">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="w-6 h-6 md:w-8 md:h-8 text-indigo-700"
-                          viewBox="0 0 24 24"
-                          strokeWidth="1.5"
-                          stroke="currentColor"
-                          fill="none"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <path stroke="none" d="M0 0h24v24H0z" />
-                          <path d="M12 3l3.09 6.26L21 10.27l-5 4.87 1.18 6.9L12 17.75l-5.18 4.29L8 15.14 3 10.27l5.91-.91L12 3z" />
-                        </svg>
-                        <p className="text-indigo-700 xl:text-base text-base ml-3">My Reviews</p>
-                      </Link>
-                    </li>
+                    <>
+                      <li className="text-gray-800 pt-8">
+                        <Link to={myReviewsPath} className="flex items-center">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="w-6 h-6 md:w-8 md:h-8 text-indigo-700"
+                            viewBox="0 0 24 24"
+                            strokeWidth="1.5"
+                            stroke="currentColor"
+                            fill="none"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path stroke="none" d="M0 0h24v24H0z" />
+                            <path d="M12 3l3.09 6.26L21 10.27l-5 4.87 1.18 6.9L12 17.75l-5.18 4.29L8 15.14 3 10.27l5.91-.91L12 3z" />
+                          </svg>
+                          <p className="text-indigo-700 xl:text-base text-base ml-3">My Reviews</p>
+                        </Link>
+                      </li>
+                      <li className="text-gray-800 pt-8">
+                        <Link to="/wallet" className="flex items-center">
+                          <p className="text-gray-800 xl:text-base text-base ml-3">
+                            💰 My Wallet
+                          </p>
+                        </Link>
+                      </li>
+                    </>
                   )}
                   {/* Profile Link for All Users in Mobile */}
                   <li className="text-gray-800 pt-8">

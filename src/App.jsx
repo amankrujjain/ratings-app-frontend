@@ -13,6 +13,8 @@ import EmployeeReviews from "./pages/EmployeeReviews";
 import RolesTable from "./pages/RolesTable";
 import SingleEmployeeRating from "./components/SingleEmployeeRatings";
 import RatingSubmissionForm from "./components/RatingsSubmissionForm";
+import Wallet from "./pages/Wallet";
+import AdminIncentives from "./pages/AdminIncentives";
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useContext(UserContext);
@@ -45,6 +47,24 @@ function App() {
           element={
             <ProtectedRoute>
               <Profile />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/wallet"
+          element={
+            <ProtectedRoute>
+              <Wallet />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/incentives"
+          element={
+            <ProtectedRoute>
+              <AdminIncentives />
             </ProtectedRoute>
           }
         />

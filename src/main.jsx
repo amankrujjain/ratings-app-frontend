@@ -9,6 +9,8 @@ import { RoleProvider } from './context/RoleContext.jsx'
 import { RatingProvider } from './context/RatingContext.jsx'; // Import RatingProvider
 import { AuthProvider } from './context/AuthContext.jsx';
 import './index.css';
+import { WalletProvider } from './context/WalletContext.jsx';
+import { AdminIncentiveProvider } from "./context/AdminIncentiveContext";
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
@@ -18,7 +20,11 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           <RatingProvider>
             <RoleProvider>
               <AuthProvider>
+                <WalletProvider>
+                  <AdminIncentiveProvider>
                 <App />
+                  </AdminIncentiveProvider>
+                </WalletProvider>
               </AuthProvider>
             </RoleProvider>
           </RatingProvider>
