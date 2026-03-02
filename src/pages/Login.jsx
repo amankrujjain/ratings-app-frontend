@@ -85,13 +85,25 @@ function Login() {
             </div>
             <button
               type="submit"
-              className="w-full bg-indigo-600 text-white p-2 rounded-md hover:bg-indigo-700 transition duration-300"
+              className="inline-flex items-center justify-center gap-2 
+           w-full 
+           select-none rounded 
+           bg-slate-800 
+           py-2 px-6 
+           text-sm font-semibold text-white 
+           shadow-md shadow-slate-900/10 
+           transition-all 
+           hover:shadow-lg hover:shadow-slate-900/20 
+           active:opacity-[0.85] 
+           disabled:pointer-events-none 
+           disabled:opacity-50 
+           disabled:shadow-none"
               disabled={loading}
             >
               {loading ? 'Logging in...' : 'Login'}
             </button>
           </form>
-          
+
         </div>
       </div>
     </div>

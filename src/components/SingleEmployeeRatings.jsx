@@ -1,5 +1,6 @@
 // src/components/SingleEmployeeRating.jsx
 import React, { useEffect } from "react";
+import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { useRating } from "../context/RatingContext";
 
@@ -7,13 +8,13 @@ const BASE_URL = "http://localhost:5000/api"; // Adjust as needed
 
 const SingleEmployeeRating = () => {
   const { employeeId } = useParams(); // Get employeeId from URL params
-  const { ratings, loading, error, getEmployeeRatingsID } = useRating();
+  const { ratings, loading, error, getEmployeeRatings } = useRating();
 
   useEffect(() => {
     if (employeeId) {
-      getEmployeeRatingsID(employeeId); // Fetch ratings using protected endpoint
+      getEmployeeRatings(employeeId); // Fetch ratings using protected endpoint
     }
-  }, [employeeId, getEmployeeRatingsID]);
+  }, [employeeId, getEmployeeRatings]);
 
   if (loading) {
     return <div className="text-center py-4 text-gray-500">Loading ratings...</div>;
@@ -54,8 +55,17 @@ const SingleEmployeeRating = () => {
                   Rating
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  In Range
+                  GMB Rating ID
                 </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Source
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
+                {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  In Range
+                </th> */}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
@@ -84,7 +94,22 @@ const SingleEmployeeRating = () => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {rating.rating}
                   </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {rating.googleReviewId}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {rating.source}
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    <Link
+                      to={`/review-details/${rating._id}`}
+                      className="inline-flex items-center gap-2 w-full sm:w-auto select-none rounded bg-slate-800 py-2 px-6 text-center text-sm font-semibold text-white shadow-md shadow-slate-900/10 transition-all hover:shadow-lg hover:shadow-slate-900/20 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+
+                    >
+                      View Details
+                    </Link>
+                  </td>
+                  {/* <td className="px-6 py-4 whitespace-nowrap text-sm">
                     <span
                       className={`px-2 py-1 rounded-full text-white ${
                         rating.inRange ? "bg-green-500" : "bg-red-500"
@@ -93,7 +118,7 @@ const SingleEmployeeRating = () => {
                     >
                       {rating.inRange ? "Yes" : "No"}
                     </span>
-                  </td>
+                  </td> */}
                 </tr>
               ))}
             </tbody>

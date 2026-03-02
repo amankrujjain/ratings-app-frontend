@@ -12,7 +12,8 @@ import RatingsDisplay from "./pages/RatingsDisplay";
 import EmployeeReviews from "./pages/EmployeeReviews";
 import RolesTable from "./pages/RolesTable";
 import SingleEmployeeRating from "./components/SingleEmployeeRatings";
-import RatingSubmissionForm from "./components/RatingsSubmissionForm";
+// import RatingSubmissionForm from "./components/RatingsSubmissionForm";
+import ReviewDetails from "./pages/ReviewDetails";
 import Wallet from "./pages/Wallet";
 import AdminIncentives from "./pages/AdminIncentives";
 
@@ -32,7 +33,7 @@ function App() {
 
       <Navbar />
       <Routes>
-        <Route path="/submit-review/:employeeId" element={<RatingSubmissionForm/>}/>
+        {/* <Route path="/submit-review/:employeeId" element={<RatingSubmissionForm/>}/> */}
         <Route path="/" element={user && user.isLogin ? <Navigate to="/profile" /> : <Login />} />
         <Route
           path="/login"
@@ -94,7 +95,7 @@ function App() {
           }
         />
         <Route
-          path="/employee-reviews/:employeeId"
+          path="/my-reviews"
           element={
             <ProtectedRoute>
               <EmployeeReviews />
@@ -102,13 +103,21 @@ function App() {
           }
         />
         <Route
-            path="/ratings/employee/:employeeId"
-            element={
-              <ProtectedRoute>
-                <SingleEmployeeRating />
-              </ProtectedRoute>
-            }
-          />
+          path="/employee-reviews/:employeeId"
+          element={
+            <ProtectedRoute>
+              <SingleEmployeeRating />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/review-details/:ratingId"
+          element={
+            <ProtectedRoute>
+              <ReviewDetails />
+            </ProtectedRoute>
+          }
+        />
         {/* Added Forgot Password Route */}
         <Route
           path="/reset-password"

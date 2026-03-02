@@ -22,7 +22,7 @@ function Navbar() {
   if (!user) return null; // Hide navbar if not logged in
 
   const isAdminOrSubadmin = user.role?.name === "admin" || user.role?.name === "subadmin";
-  const myReviewsPath = `/ratings/employee/${user._id}`; // Assuming user._id is the employeeId
+  const myReviewsPath = `/employee-reviews/${user._id}`;; // Assuming user._id is the employeeId
 
   return (
     <>
@@ -122,40 +122,74 @@ function Navbar() {
                       to="/incentives"
                       className="flex px-5 items-center py-6 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none transition duration-150 ease-in-out"
                     >
-                      💰 Incentives
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="mr-2"
+                        width={20}
+                        height={20}
+                        viewBox="0 0 24 24"
+                        strokeWidth="1.5"
+                        stroke="currentColor"
+                        fill="none"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path stroke="none" d="M0 0h24v24H0z" />
+                        <path d="M12 1v22" />
+                        <path d="M17 5H9.5a3.5 3.5 0 000 7H14a3.5 3.5 0 010 7H6" />
+                      </svg>
+
+                      Incentives
                     </Link>
                   </>
                 ) : (
-                    <>
-                      <Link
-                        to={myReviewsPath}
-                        className="flex px-5 items-center py-6 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none transition duration-150 ease-in-out"
+                  <>
+                    <Link
+                      to={myReviewsPath}
+                      className="flex px-5 items-center py-6 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none transition duration-150 ease-in-out"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="mr-2"
+                        width={20}
+                        height={20}
+                        viewBox="0 0 24 24"
+                        strokeWidth="1.5"
+                        stroke="currentColor"
+                        fill="none"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="mr-2"
-                          width={20}
-                          height={20}
-                          viewBox="0 0 24 24"
-                          strokeWidth="1.5"
-                          stroke="currentColor"
-                          fill="none"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <path stroke="none" d="M0 0h24v24H0z" />
-                          <path d="M12 3l3.09 6.26L21 10.27l-5 4.87 1.18 6.9L12 17.75l-5.18 4.29L8 15.14 3 10.27l5.91-.91L12 3z" />
-                        </svg>
-                        My Reviews
-                      </Link>
+                        <path stroke="none" d="M0 0h24v24H0z" />
+                        <path d="M12 3l3.09 6.26L21 10.27l-5 4.87 1.18 6.9L12 17.75l-5.18 4.29L8 15.14 3 10.27l5.91-.91L12 3z" />
+                      </svg>
+                      My Reviews
+                    </Link>
 
-                      <Link
-                        to="/wallet"
-                        className="flex px-5 items-center py-6 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none transition duration-150 ease-in-out"
+                    <Link
+                      to="/wallet"
+                      className="flex px-5 items-center py-6 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none transition duration-150 ease-in-out"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="mr-2"
+                        width={20}
+                        height={20}
+                        viewBox="0 0 24 24"
+                        strokeWidth="1.5"
+                        stroke="currentColor"
+                        fill="none"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       >
-                        💰 My Wallet
-                      </Link>
-                    </>
+                        <path stroke="none" d="M0 0h24v24H0z" />
+                        <path d="M5 7h14a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2V9a2 2 0 012-2z" />
+                        <path d="M16 12h2" />
+                        <path d="M3 9l14 -4a2 2 0 012 2v2" />
+                      </svg>
+                       My Wallet
+                    </Link>
+                  </>
                 )}
                 {/* Profile Link for All Users */}
                 <Link
@@ -342,7 +376,7 @@ function Navbar() {
                       <li className="text-gray-800 pt-8">
                         <Link to="/incentives" className="flex items-center">
                           <p className="text-gray-800 xl:text-base text-base ml-3">
-                            💰 Incentives
+                             Incentives
                           </p>
                         </Link>
                       </li>
@@ -369,8 +403,21 @@ function Navbar() {
                       </li>
                       <li className="text-gray-800 pt-8">
                         <Link to="/wallet" className="flex items-center">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="w-6 h-6 md:w-8 md:h-8 text-gray-800"
+                            viewBox="0 0 24 24"
+                            strokeWidth="1.5"
+                            stroke="currentColor"
+                            fill="none"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path stroke="none" d="M0 0h24v24H0z" />
+                            <path d="M17 17H9a1 1 0 01-1-1V9a1 1 0 011-1h8a1 1 0 011 1v7a1 1 0 01-1 1z" />
+                          </svg>
                           <p className="text-gray-800 xl:text-base text-base ml-3">
-                            💰 My Wallet
+                            My Wallet
                           </p>
                         </Link>
                       </li>

@@ -1,105 +1,141 @@
-import { useContext } from 'react';
-import { UserContext } from '../context/userContext';
-import { Link } from 'react-router-dom';
-const BASE_URL = 'http://localhost:5000';
+import { useContext } from "react";
+import { UserContext } from "../context/userContext";
+import { useNavigate, Link } from "react-router-dom";
 
+const BASE_URL = "http://localhost:5000";
 
 function Profile() {
   const { user } = useContext(UserContext);
-  console.log(user);
+  const navigate = useNavigate();
 
   if (!user) {
-    return <div className="text-center text-red-500">Please log in to view your profile.</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center text-red-500">
+        Please log in to view your profile.
+      </div>
+    );
   }
 
+  const firstLetter = user.employeeName
+    ? user.employeeName.charAt(0).toUpperCase()
+    : "U";
+
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4 pt-25 xl:pt-4">
-      <div className="max-w-lg w-full bg-white shadow-lg rounded-xl p-6 relative">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 px-4 py-8">
 
-        {/* Profile Header with Image */}
-        <div className="flex flex-col items-center mb-6">
-          <div className="w-32 h-32 rounded-full overflow-hidden mb-4 border-4 border-indigo-600">
-            <img
-              src={
-                user.employeePhoto
-                  ? `${BASE_URL}/${user.employeePhoto.replace(/\\/g, '/')}`
-                  : 'https://via.placeholder.com/40'
-              }
-              alt="Profile"
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <h2 className="text-2xl font-bold text-gray-800">{user.employeeName || 'N/A'}</h2>
-          <p className="text-sm text-gray-600 mt-1">{user.designation || 'N/A'}</p>
-        </div>
+      <div className="max-w-2xl mx-auto">
 
-        {/* User Details */}
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Employee ID</label>
-              <p className="mt-1 p-2 w-full bg-gray-50 border border-gray-200 rounded-md text-gray-800">
-                {user.employeeId || 'N/A'}
-              </p>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Email</label>
-              <p className="mt-1 p-2 w-full bg-gray-50 border border-gray-200 rounded-md text-gray-800">
-                {user.email || 'N/A'}
-              </p>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Contact Number</label>
-              <p className="mt-1 p-2 w-full bg-gray-50 border border-gray-200 rounded-md text-gray-800">
-                {user.contactNo || 'N/A'}
-              </p>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Department</label>
-              <p className="mt-1 p-2 w-full bg-gray-50 border border-gray-200 rounded-md text-gray-800">
-                {user.department || 'N/A'}
-              </p>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Blood Group</label>
-              <p className="mt-1 p-2 w-full bg-gray-50 border border-gray-200 rounded-md text-gray-800">
-                {user.bloodGroup || 'N/A'}
-              </p>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Joining Date</label>
-              <p className="mt-1 p-2 w-full bg-gray-50 border border-gray-200 rounded-md text-gray-800">
-                {user.joiningDate ? new Date(user.joiningDate).toLocaleDateString() : 'N/A'}
-              </p>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Role</label>
-              <p className="mt-1 p-2 w-full bg-gray-50 border border-gray-200 rounded-md text-gray-800">
-                {user.role?.name || 'N/A'}
-              </p>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Status</label>
-              <p className="mt-1 p-2 w-full bg-gray-50 border border-gray-200 rounded-md text-gray-800">
-                {user.isActive ? 'Active' : 'Inactive'}
-              </p>
-            </div>
-          </div>
+        {/* Profile Card */}
+        <div className="bg-white rounded-lg shadow-md p-8 mb-6">
 
-          {/* Reset Password Link */}
-          <div className="text-center mt-6">
-          <p className="mt-1 p-2 w-full bg-gray-50 border border-gray-200 rounded-md text-gray-800">
-            Forget Password ? Click here to:
-            <Link
-              to="/reset-password"
-              className="text-sm font-medium text-blue-600 hover:underline"
+          {/* Header */}
+          <div className="flex items-start gap-6 pb-6 border-b border-slate-200">
+
+            {/* Avatar */}
+            {user.employeePhoto ? (
+              <img
+                src={`${BASE_URL}/${user.employeePhoto.replace(/\\/g, "/")}`}
+                alt="Profile"
+                className="w-24 h-24 rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-24 h-24 rounded-full 
+                              bg-gradient-to-br from-slate-700 to-slate-900 
+                              flex items-center justify-center 
+                              text-white text-4xl font-bold">
+                {firstLetter}
+              </div>
+            )}
+
+            {/* Name + Role */}
+            <div>
+              <h1 className="text-3xl font-bold text-slate-800">
+                {user.employeeName || "N/A"}
+              </h1>
+
+              <p className="text-lg text-slate-600 mt-1">
+                {user.designation || user.role?.name || "N/A"}
+              </p>
+
+              <span
+                className={`inline-block mt-3 px-3 py-1 text-xs font-semibold rounded-full 
+                  ${user.isActive
+                    ? "bg-green-100 text-green-700"
+                    : "bg-red-100 text-red-600"
+                  }`}
               >
-              Reset Password
-            </Link>
-              </p>
+                {user.isActive ? "Active" : "Inactive"}
+              </span>
+            </div>
+          </div>
+
+          {/* Details Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6">
+
+            <ProfileItem label="Employee ID" value={user.employeeId} />
+            <ProfileItem label="Email" value={user.email} />
+            <ProfileItem label="Contact Number" value={user.contactNo} />
+            <ProfileItem label="Department" value={user.department} />
+            <ProfileItem label="Blood Group" value={user.bloodGroup} />
+            <ProfileItem
+              label="Joining Date"
+              value={
+                user.joiningDate
+                  ? new Date(user.joiningDate).toLocaleDateString()
+                  : "N/A"
+              }
+            />
+            <ProfileItem label="Role" value={user.role?.name} />
+            <ProfileItem
+              label="Status"
+              value={user.isActive ? "Active" : "Inactive"}
+              highlight={user.isActive}
+            />
+
           </div>
         </div>
+
+        {/* Reset Password Card */}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <p className="text-slate-700 mb-4">
+            Forgot your password?
+          </p>
+
+          <Link
+            to="/reset-password"
+            className="block text-center
+                       w-full 
+                       select-none rounded 
+                       bg-slate-800 
+                       py-3 px-6 
+                       text-sm font-semibold text-white 
+                       shadow-md shadow-slate-900/10 
+                       transition-all 
+                       hover:shadow-lg hover:shadow-slate-900/20 
+                       active:opacity-[0.85]"
+          >
+            Click here to: Reset Password
+          </Link>
+        </div>
+
       </div>
+    </div>
+  );
+}
+
+function ProfileItem({ label, value, highlight }) {
+  return (
+    <div>
+      <p className="text-xs text-slate-500 uppercase tracking-wide font-semibold">
+        {label}
+      </p>
+      <p
+        className={`text-sm mt-1 ${
+          highlight ? "text-green-600 font-semibold" : "text-slate-800"
+        }`}
+      >
+        {value || "N/A"}
+      </p>
     </div>
   );
 }
