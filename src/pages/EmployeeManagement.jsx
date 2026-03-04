@@ -10,6 +10,7 @@ const EmployeeManagement = () => {
     employees,
     selectedEmployee,
     loading,
+    pagination,
     getAllEmployees,
     getEmployeeById,
     updateEmployee,
@@ -20,6 +21,10 @@ const EmployeeManagement = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [sortBy, setSortBy] = useState("employeeId");
+  const [order, setOrder] = useState("asc");
+  const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState(searchTerm);
   const [employeeToDelete, setEmployeeToDelete] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
@@ -35,22 +40,57 @@ const EmployeeManagement = () => {
     department: '',
   });
 
+  // debounce the search term to avoid firing API on every keystroke
   useEffect(() => {
-    console.log('Fetching employees on mount');
-    getAllEmployees().catch((err) => console.error('Initial fetch failed:', err));
-  }, []);
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+    }, 300); // 300ms delay
+
+    return () => clearTimeout(handler);
+  }, [searchTerm]);
+
+  useEffect(() => {
+    // whenever paging, sorting or debounced search changes, reload list
+    const params = {
+      page: currentPage,
+      limit: itemsPerPage,
+      sortBy,
+      order,
+    };
+    if (debouncedSearch) {
+      params.search = debouncedSearch;
+    }
+
+    getAllEmployees(params).catch((err) => console.error('Fetch failed:', err));
+  }, [currentPage, itemsPerPage, sortBy, order, debouncedSearch]);
 
   useEffect(() => {
     console.log('Employees state updated:', employees);
   }, [employees]);
 
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentEmployees = employees.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(employees.length / itemsPerPage);
-
+  // const indexOfLastItem = currentPage * itemsPerPage;
+  // const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  // const currentEmployees = employees.slice(indexOfFirstItem, indexOfLastItem);
+  // const totalPages = Math.ceil(employees.length / itemsPerPage);
+  const totalPages = pagination?.totalPages || 1;
   const handleNextPage = () => {
     if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
+  };
+
+  const handleSort = (field) => {
+  if (sortBy === field) {
+    setOrder((prev) => (prev === "asc" ? "desc" : "asc"));
+  } else {
+    setSortBy(field);
+    setOrder("asc");
+  }
+
+  setCurrentPage(1); // reset to first page on sort
+};
+
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1); // reset page immediately but API will use debounced term
   };
 
   const handlePrevPage = () => {
@@ -135,24 +175,27 @@ const EmployeeManagement = () => {
     setIsDeleteModalOpen(true);
   };
 
-  const confirmDelete = (id) => {
-    deleteEmployee(id)
-      .then(() => {
-        console.log(`Employee with ID ${id} deleted successfully`);
-        getAllEmployees();
-        if (currentEmployees.length === 1 && currentPage > 1) {
-          setCurrentPage((prev) => prev - 1);
-        }
-        setIsDeleteModalOpen(false);
-        setEmployeeToDelete(null);
-      })
-      .catch((error) => {
-        console.error('Failed to delete employee:', error);
-        alert('Failed to delete employee!');
-        setIsDeleteModalOpen(false);
-        setEmployeeToDelete(null);
-      });
-  };
+const confirmDelete = async (id) => {
+  try {
+    await deleteEmployee(id);
+
+    // If this was last item on page
+    if (employees.length === 1 && currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+    } else {
+      const params = { page: currentPage, limit: itemsPerPage };
+      if (debouncedSearch) params.search = debouncedSearch;
+      getAllEmployees(params);
+    }
+
+    setIsDeleteModalOpen(false);
+    setEmployeeToDelete(null);
+  } catch (error) {
+    console.error('Failed to delete employee:', error);
+    setIsDeleteModalOpen(false);
+    setEmployeeToDelete(null);
+  }
+};
 
   if (loading) return <div>Loading...</div>;
   console.log('Rendering employees:', employees);
@@ -166,6 +209,30 @@ const EmployeeManagement = () => {
             <div>
               <h3 className="text-lg font-semibold text-slate-800">Members List</h3>
               <p className="text-slate-500">Review each person before edit</p>
+            </div>
+            {/* search input */}
+            <div className="relative flex items-center w-full max-w-xs">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                className="absolute left-3 w-4 h-4 text-slate-400"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1116.65 16.65z"
+                />
+              </svg>
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={handleSearch}
+                placeholder="Search members..."
+                className="pl-10 w-full h-10 bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md"
+              />
             </div>
             <div className="flex flex-col gap-2 shrink-0 sm:flex-row">
               <button
@@ -196,7 +263,7 @@ const EmployeeManagement = () => {
           <table className="w-full mt-4 text-left table-auto min-w-max">
             <thead>
               <tr>
-                <th className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
+                <th onClick={() => handleSort("employeeId")} className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
                   <p className="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">
                     Employee ID
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" aria-hidden="true" className="w-4 h-4">
@@ -204,7 +271,7 @@ const EmployeeManagement = () => {
                     </svg>
                   </p>
                 </th>
-                <th className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
+                <th onClick={() => handleSort("name")} className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
                   <p className="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">
                     Member
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" aria-hidden="true" className="w-4 h-4">
@@ -212,7 +279,7 @@ const EmployeeManagement = () => {
                     </svg>
                   </p>
                 </th>
-                <th className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
+                <th onClick={() => handleSort("details")} className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
                   <p className="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">
                     Details
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" aria-hidden="true" className="w-4 h-4">
@@ -220,7 +287,7 @@ const EmployeeManagement = () => {
                     </svg>
                   </p>
                 </th>
-                <th className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
+                <th onClick={() => handleSort("isActive")} className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
                   <p className="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">
                     Active
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" aria-hidden="true" className="w-4 h-4">
@@ -228,7 +295,7 @@ const EmployeeManagement = () => {
                     </svg>
                   </p>
                 </th>
-                <th className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
+                <th onClick={() => handleSort("employed")} className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
                   <p className="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">
                     Employed
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" aria-hidden="true" className="w-4 h-4">
@@ -236,7 +303,7 @@ const EmployeeManagement = () => {
                     </svg>
                   </p>
                 </th>
-                <th className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
+                <th onClick={() => handleSort("avgRating")} className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
                   <p className="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">
                     Avg Ratings
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" aria-hidden="true" className="w-4 h-4">
@@ -252,8 +319,8 @@ const EmployeeManagement = () => {
               </tr>
             </thead>
             <tbody>
-              {currentEmployees.length > 0 ? (
-                currentEmployees.map((emp) => (
+              {employees.length > 0 ? (
+                employees.map((emp) => (
                   <tr key={emp._id}>
                     <td className="p-4 border-b border-slate-200">
                       <p className="text-sm text-slate-500">{emp.employeeId}</p>
@@ -365,18 +432,19 @@ const EmployeeManagement = () => {
           </p>
           <div className="flex gap-1">
             <button
-              className="rounded border border-slate-300 py-2.5 px-3 text-center text-xs font-semibold text-slate-600 transition-all hover:opacity-75 focus:ring focus:ring-slate-300 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
               type="button"
               onClick={handlePrevPage}
-              disabled={currentPage === 1}
+              disabled={currentPage <= 1}
+              className="rounded border border-slate-300 py-2.5 px-3 text-center text-xs font-semibold text-slate-600 transition-all hover:opacity-75 focus:ring focus:ring-slate-300 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
             >
               Previous
             </button>
+
             <button
-              className="rounded border border-slate-300 py-2.5 px-3 text-center text-xs font-semibold text-slate-600 transition-all hover:opacity-75 focus:ring focus:ring-slate-300 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
               type="button"
               onClick={handleNextPage}
-              disabled={currentPage === totalPages}
+              disabled={currentPage >= totalPages}
+              className="rounded border border-slate-300 py-2.5 px-3 text-center text-xs font-semibold text-slate-600 transition-all hover:opacity-75 focus:ring focus:ring-slate-300 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
             >
               Next
             </button>

@@ -9,6 +9,7 @@ export const EmployeeContext = createContext();
 export default function EmployeeContextProvider({ children }) {
   const [employees, setEmployees] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [pagination, setPagination] = useState({});
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -58,9 +59,19 @@ export default function EmployeeContextProvider({ children }) {
   };
 
   // Get All Employees
-  const getAllEmployees = async () => {
-    const data = await apiFetch('/all-user', { method: 'GET' });
-    setEmployees(data || []); // Fallback to empty array if no data
+  const getAllEmployees = async (params = {}) => {
+    const query = new URLSearchParams(params).toString();
+    const endpoint = query ? `/all-user?${query}` : `/all-user`;
+
+    const data = await apiFetch(endpoint, {
+      method: 'GET'
+    });
+
+    if (data) {
+      setEmployees(data.data || []);
+      setPagination(data.pagination || {});
+    }
+
     return data;
   };
 
@@ -97,6 +108,7 @@ export default function EmployeeContextProvider({ children }) {
     employees,
     selectedEmployee,
     loading,
+    pagination,
     createEmployee,
     getAllEmployees,
     getEmployeeById,

@@ -16,6 +16,7 @@ import SingleEmployeeRating from "./components/SingleEmployeeRatings";
 import ReviewDetails from "./pages/ReviewDetails";
 import Wallet from "./pages/Wallet";
 import AdminIncentives from "./pages/AdminIncentives";
+import NotFound from "./pages/NotFound";
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useContext(UserContext);
@@ -130,9 +131,7 @@ function App() {
         <Route
           path="*"
           element={
-            <ProtectedRoute>
-              <div>Not Found</div>
-            </ProtectedRoute>
+              <NotFound/>
           }
         />
       </Routes>

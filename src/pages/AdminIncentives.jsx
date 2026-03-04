@@ -62,7 +62,7 @@ function AdminIncentives() {
     };
 
     return (
-        <div className="min-h-screen bg-slate-50 px-4 sm:px-6 lg:px-8 py-8">
+        <div className="min-h-[calc(100vh-70px)] bg-slate-50 px-4 sm:px-6 lg:px-8 py-8">
 
             {/* Back Button (Your Premium Style) */}
             <div className="max-w-5xl mx-auto mb-6">

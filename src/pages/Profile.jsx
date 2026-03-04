@@ -21,7 +21,7 @@ function Profile() {
     : "U";
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 px-4 py-8">
+    <div className="min-h-[calc(100vh-70px)] bg-gradient-to-br from-slate-50 to-slate-100 px-4 py-8">
 
       <div className="max-w-2xl mx-auto">
 
