@@ -1,10 +1,11 @@
 import { createContext, useState, useContext } from "react";
 import { toast } from "react-toastify"; // Import toast from react-toastify
+import { config } from '../../config';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const BASE_URL = "http://localhost:5000/api/auth";
+  const BASE_URL = `${config.BASE_URL}/api/auth`;
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);

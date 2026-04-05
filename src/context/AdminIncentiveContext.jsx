@@ -2,9 +2,10 @@ import React, { createContext, useContext, useState, useCallback } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "./userContext";
+import { config } from '../../config';
 
 const AdminIncentiveContext = createContext();
-const API_BASE_URL = "http://localhost:5000";
+const API_BASE_URL = config.BASE_URL;
 
 export const AdminIncentiveProvider = ({ children }) => {
   const [summary, setSummary] = useState([]);
@@ -44,8 +45,10 @@ export const AdminIncentiveProvider = ({ children }) => {
     try {
       setLoading(true);
 
+      const url = `${API_BASE_URL}/incentive/monthly-summary?month=${month}&year=${year}`;
+      console.log('[AdminIncentive] Fetching:', url);
       const response = await fetchWithAuth(
-        `${API_BASE_URL}/incentive/monthly-summary?month=${month}&year=${year}`
+        url
       );
 
       const data = await response.json();

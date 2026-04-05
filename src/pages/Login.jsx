@@ -49,8 +49,12 @@ function Login() {
         </div>
       </div>
       <div className="w-full md:w-1/2 flex items-center justify-center bg-gray-100 p-4">
-        <div className="max-w-lg w-full bg-white shadow-lg rounded-lg p-6">
-          <h2 className="text-2xl font-semibold text-center mb-6">Login</h2>
+        <div className="max-w-lg w-full bg-white shadow-lg rounded-lg p-5 sm:p-6">
+          <div className="md:hidden flex flex-col items-center mb-4">
+            <img src={logo} alt="Company Logo" className="w-24 mb-2" />
+            <p className="text-sm text-gray-600">Welcome to Dashboard Admin</p>
+          </div>
+          <h2 className="text-xl sm:text-2xl font-semibold text-center mb-6">Login</h2>
           {error && <p className="text-red-500 text-center mb-4">{error}</p>}
           <form onSubmit={handleSubmit}>
             <div className="mb-4">

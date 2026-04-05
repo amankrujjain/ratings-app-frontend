@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { config } from '../../config';
 
-const API_BASE_URL = "http://localhost:5000/api";
+const API_BASE_URL = `${config.BASE_URL}/api`;
 
 const ReviewDetails = () => {
     const { ratingId } = useParams();
@@ -59,33 +60,11 @@ const ReviewDetails = () => {
         review.feedback?.match(/#(\w+)/)?.[1] || review.employee?.employeeId;
 
     return (
-        <div className="min-h-[calc(100vh-70px)] w-full bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50">
+        <div className="min-h-[calc(100vh-70px)] w-full bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 pt-16 xl:pt-0">
 
             {/* Responsive Container */}
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
-                {/* Back Button */}
-                <div className="mb-6">
-                    <button
-                        onClick={() => navigate(-1)}
-                        className="inline-flex items-center gap-2 w-full sm:w-auto select-none rounded bg-slate-800 py-2 px-6 text-center text-sm font-semibold text-white shadow-md shadow-slate-900/10 transition-all hover:shadow-lg hover:shadow-slate-900/20 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-                    >
-                        <svg
-                            className="w-5 h-5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M15 19l-7-7 7-7"
-                            />
-                        </svg>
-                        <span className="font-medium">Back</span>
-                    </button>
-                </div>
 
                 <div className="flex justify-center">
                     <div className="w-full max-w-lg">
@@ -108,7 +87,7 @@ const ReviewDetails = () => {
                                 </span>
                             </div>
 
-                            <h1 className="text-3xl font-bold text-slate-800">
+                            <h1 className="text-2xl sm:text-3xl font-bold text-slate-800">
                                 Review Details
                             </h1>
                         </div>
@@ -117,8 +96,8 @@ const ReviewDetails = () => {
                         <div className="bg-white rounded-3xl shadow-xl shadow-orange-100/50 overflow-hidden">
 
                             {/* Source + ID */}
-                            <div className="bg-gradient-to-r from-slate-50 to-slate-100 px-6 py-4 border-b border-slate-100">
-                                <div className="flex items-center justify-between flex-wrap gap-4">
+                            <div className="bg-gradient-to-r from-slate-50 to-slate-100 px-4 sm:px-6 py-4 border-b border-slate-100">
+                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
 
                                     <div className="flex items-center gap-3">
                                         <div className="w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center">
@@ -138,7 +117,7 @@ const ReviewDetails = () => {
                                         </div>
                                     </div>
 
-                                    <div className="text-right">
+                                    <div className="text-left sm:text-right">
                                         <p className="text-xs text-slate-500 uppercase tracking-wider font-medium">
                                             Review ID
                                         </p>
@@ -151,7 +130,7 @@ const ReviewDetails = () => {
                             </div>
 
                             {/* Rating Section */}
-                            <div className="px-6 py-6 text-center border-b border-slate-100">
+                            <div className="px-4 sm:px-6 py-6 text-center border-b border-slate-100">
                                 <div className="flex justify-center gap-1 mb-3">
                                     {[...Array(5)].map((_, i) => (
                                         <svg
@@ -202,7 +181,7 @@ const ReviewDetails = () => {
                             </div>
 
                             {/* Customer */}
-                            <div className="px-6 py-5">
+                            <div className="px-4 sm:px-6 py-5">
                                 <div className="flex items-center gap-4 flex-wrap">
                                     <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-rose-400 to-orange-400 flex items-center justify-center text-white text-xl font-bold shadow-lg">
                                         {initials}
@@ -220,7 +199,7 @@ const ReviewDetails = () => {
                             </div>
 
                             {/* Feedback */}
-                            <div className="px-6 py-5 bg-gradient-to-br from-slate-50 to-white">
+                            <div className="px-4 sm:px-6 py-5 bg-gradient-to-br from-slate-50 to-white">
                                 <p className="text-xs text-slate-500 uppercase tracking-wider font-medium mb-3">
                                     Feedback
                                 </p>
@@ -239,7 +218,7 @@ const ReviewDetails = () => {
                             </div>
 
                             {/* Timestamp */}
-                            <div className="px-6 py-4 bg-slate-50 border-t border-slate-100">
+                            <div className="px-4 sm:px-6 py-4 bg-slate-50 border-t border-slate-100">
                                 <div className="flex items-center justify-between text-sm flex-wrap gap-2">
                                     <span className="text-slate-500">Created</span>
                                     <span className="font-medium text-slate-700">

@@ -1,5 +1,6 @@
 // AddEmployeeForm.jsx
 import React, { useState, useEffect } from 'react';
+import { config } from '../../config';
 
 const AddEmployeeForm = ({ onSubmit, onCancel }) => {
   const [formData, setFormData] = useState({
@@ -23,7 +24,7 @@ const AddEmployeeForm = ({ onSubmit, onCancel }) => {
       setLoadingRoles(true);
       try {
         const token = localStorage.getItem('accessToken'); // Get token from localStorage
-        const response = await fetch('http://localhost:5000/api/all-roles', {
+        const response = await fetch(`${config.BASE_URL}/api/all-roles`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

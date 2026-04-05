@@ -2,9 +2,10 @@ import React, { createContext, useContext, useState, useCallback } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "./userContext";
+import { config } from '../../config';
 
 const WalletContext = createContext();
-const API_BASE_URL = "http://localhost:5000";
+const API_BASE_URL = config.BASE_URL;
 
 export const WalletProvider = ({ children }) => {
   const [walletData, setWalletData] = useState(null);
@@ -45,8 +46,10 @@ export const WalletProvider = ({ children }) => {
     try {
       setLoading(true);
 
+      const url = `${API_BASE_URL}/incentive/monthly/${employeeId}?month=${month}&year=${year}`;
+      console.log('[Wallet] Fetching:', url);
       const response = await fetchWithAuth(
-        `${API_BASE_URL}/incentive/monthly/${employeeId}?month=${month}&year=${year}`,
+        url,
         { method: "GET" }
       );
 

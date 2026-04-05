@@ -25,7 +25,7 @@ function Wallet() {
     return <div className="h-screen flex items-center justify-center">Please login</div>;
 
   return (
-    <div className="min-h-[calc(100vh-70px)] bg-gradient-to-b from-slate-50 to-slate-100 pt-10 px-4 overflow-hidden flex flex-col">
+    <div className="min-h-[calc(100vh-70px)] bg-gradient-to-b from-slate-50 to-slate-100 pt-20 xl:pt-10 px-4 overflow-hidden flex flex-col">
 
       {/* HEADER */}
       <div className="max-w-4xl mx-auto mb-8 w-full">
@@ -33,7 +33,7 @@ function Wallet() {
           <div className="w-9 h-9 rounded bg-slate-800 flex items-center justify-center text-white font-bold shadow-md">
             ₹
           </div>
-          <h1 className="text-3xl font-bold text-slate-900">
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">
             My Incentive Wallet
           </h1>
         </div>
@@ -98,7 +98,7 @@ function Wallet() {
             </div>
 
             {/* STATS GRID */}
-            <div className="grid grid-cols-2 gap-4 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
 
               {/* TOTAL REVIEWS */}
               <div className="bg-white border border-slate-200 rounded-xl p-4 hover:shadow-md transition">
@@ -109,7 +109,7 @@ function Wallet() {
                   </svg>
                   <span className="text-xs uppercase">Total Reviews</span>
                 </div>
-                <p className="text-2xl font-bold text-slate-900">
+                <p className="text-xl sm:text-2xl font-bold text-slate-900">
                   {walletData.totalReviews}
                 </p>
               </div>
@@ -122,7 +122,7 @@ function Wallet() {
                   </svg>
                   <span className="text-xs uppercase">Avg Rating</span>
                 </div>
-                <p className="text-2xl font-bold text-slate-900">
+                <p className="text-xl sm:text-2xl font-bold text-slate-900">
                   {walletData.totalReviews > 0
                     ? walletData.averageRating
                     : "—"}
@@ -157,7 +157,7 @@ function Wallet() {
               <p className="text-xs uppercase mb-2 text-slate-300">
                 Total Earnings
               </p>
-              <p className="text-4xl font-extrabold">
+              <p className="text-2xl sm:text-4xl font-extrabold">
                 ₹ {walletData.totalIncentive}
               </p>
             </div>

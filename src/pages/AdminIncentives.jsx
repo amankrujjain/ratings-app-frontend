@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { useAdminIncentive } from "../context/AdminIncentiveContext";
 import { useNavigate } from "react-router-dom";
+import { config } from '../../config';
 
 function AdminIncentives() {
     const { summary, loading, getMonthlySummary } = useAdminIncentive();
@@ -41,10 +42,11 @@ function AdminIncentives() {
         const token = localStorage.getItem("accessToken");
         let url;
         if (reportType === "monthly") {
-            url = `http://localhost:5000/incentive/export-monthly?month=${selectedMonth}&year=${selectedYear}`;
+            url = `${config.BASE_URL}/incentive/export-monthly?month=${selectedMonth}&year=${selectedYear}`;
         } else {
-            url = `http://localhost:5000/incentive/export-yearly?year=${selectedYear}`;
+            url = `${config.BASE_URL}/incentive/export-yearly?year=${selectedYear}`;
         }
+        console.log('[AdminIncentive] Export URL:', url);
         fetch(url, {
             headers: { Authorization: `Bearer ${token}` },
         })
@@ -62,7 +64,7 @@ function AdminIncentives() {
     };
 
     return (
-        <div className="min-h-[calc(100vh-70px)] bg-slate-50 px-4 sm:px-6 lg:px-8 py-8">
+        <div className="min-h-[calc(100vh-70px)] bg-slate-50 px-4 sm:px-6 lg:px-8 pt-20 pb-8 xl:py-8">
 
             {/* Back Button (Your Premium Style) */}
             <div className="max-w-5xl mx-auto mb-6">
@@ -99,7 +101,7 @@ function AdminIncentives() {
 
                 {/* Header */}
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
-                    <h1 className="text-2xl font-bold text-slate-800">
+                    <h1 className="text-xl sm:text-2xl font-bold text-slate-800">
                         💰 Monthly Incentive Summary
                     </h1>
 
@@ -169,7 +171,7 @@ function AdminIncentives() {
 
                         {/* Month Filter (Only if Monthly) */}
                         {reportType === "monthly" && (
-                            <div className="min-w-[200px]">
+                            <div className="w-full sm:min-w-[200px]">
                                 <label className="text-xs text-slate-500 mb-2 block">
                                     Month
                                 </label>
@@ -192,7 +194,7 @@ function AdminIncentives() {
                         )}
 
                         {/* Year Filter */}
-                        <div className="min-w-[160px]">
+                        <div className="w-full sm:min-w-[160px]">
                             <label className="text-xs text-slate-500 mb-2 block">
                                 Year
                             </label>
@@ -225,19 +227,19 @@ function AdminIncentives() {
                                 <table className="w-full">
                                     <thead>
                                         <tr className="bg-slate-50 border-b border-slate-200">
-                                            <th className="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wide">
+                                            <th className="px-3 sm:px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wide">
                                                 Employee
                                             </th>
-                                            <th className="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wide">
+                                            <th className="px-3 sm:px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wide">
                                                 Total Reviews
                                             </th>
-                                            <th className="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wide">
+                                            <th className="px-3 sm:px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wide">
                                                 Avg Rating
                                             </th>
-                                            <th className="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wide">
+                                            <th className="px-3 sm:px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wide">
                                                 ₹ / Review
                                             </th>
-                                            <th className="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wide">
+                                            <th className="px-3 sm:px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wide">
                                                 Total Incentive
                                             </th>
                                         </tr>
@@ -261,21 +263,21 @@ function AdminIncentives() {
                                                     key={item.employeeId}
                                                     className="border-b border-slate-200 hover:bg-slate-50"
                                                 >
-                                                    <td className="px-6 py-4 text-sm text-slate-800 font-medium">
+                                                    <td className="px-3 sm:px-6 py-4 text-sm text-slate-800 font-medium">
                                                         {item.employeeName}
                                                     </td>
-                                                    <td className="px-6 py-4 text-sm text-slate-700">
+                                                    <td className="px-3 sm:px-6 py-4 text-sm text-slate-700">
                                                         {item.totalReviews}
                                                     </td>
-                                                    <td className="px-6 py-4 text-sm text-slate-700">
+                                                    <td className="px-3 sm:px-6 py-4 text-sm text-slate-700">
                                                         <span className="text-amber-600">
                                                             ⭐ {item.averageRating}
                                                         </span>
                                                     </td>
-                                                    <td className="px-6 py-4 text-sm text-slate-700">
+                                                    <td className="px-3 sm:px-6 py-4 text-sm text-slate-700">
                                                         ₹ {item.incentivePerReview}
                                                     </td>
-                                                    <td className="px-6 py-4 text-sm font-semibold text-green-600">
+                                                    <td className="px-3 sm:px-6 py-4 text-sm font-semibold text-green-600">
                                                         ₹ {item.totalIncentive}
                                                     </td>
                                                 </tr>

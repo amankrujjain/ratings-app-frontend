@@ -3,9 +3,10 @@ import React, { createContext, useContext, useState, useCallback } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from './userContext';
+import { config } from '../../config';
 
 const RatingContext = createContext();
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = `${config.BASE_URL}/api`;
 
 export const RatingProvider = ({ children }) => {
   const [ratings, setRatings] = useState([]);

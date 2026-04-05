@@ -1,6 +1,7 @@
 // RoleProvider in RoleContext.js
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { toast } from "react-toastify"; // Import toast
+import { config } from '../../config';
 
 const RoleContext = createContext();
 
@@ -9,7 +10,7 @@ export const RoleProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const token = localStorage.getItem("accessToken");
-  const base_url = "http://localhost:5000/api";
+  const base_url = `${config.BASE_URL}/api`;
 
   const fetchRoles = async () => {
     if (!token) {

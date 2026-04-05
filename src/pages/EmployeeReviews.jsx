@@ -2,8 +2,9 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useRating } from "../context/RatingContext";
+import { config } from '../../config';
 
-const BASE_URL = 'http://localhost:5000';
+const BASE_URL = config.BASE_URL;
 
 const EmployeeReviews = () => {
   const { employeeId } = useParams();

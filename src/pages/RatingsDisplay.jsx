@@ -4,8 +4,9 @@ import { useRating } from "../context/RatingContext";
 import DeleteConfirmationModal from "../components/DeleteConfirmationModal";
 import { Link } from "react-router-dom";
 import SearchInput from "../components/SearchInput";
+import { config } from '../../config';
 
-const BASE_URL = 'http://localhost:5000';
+const BASE_URL = config.BASE_URL;
 
 const RatingsDisplay = () => {
   const { ratings, pagination, loading, error, getAllRatings, deleteRating } = useRating();
@@ -142,7 +143,7 @@ const RatingsDisplay = () => {
 
       const token = localStorage.getItem("accessToken");
 
-      const response = await fetch("http://localhost:5000/gmb/sync", {
+      const response = await fetch(`${config.BASE_URL}/gmb/sync`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -423,10 +424,10 @@ const RatingsDisplay = () => {
                         {rating.rating}
                       </td>
 
-                      <td className="px-6 py-4 text-sm">
+                      <td className="px-3 sm:px-6 py-4 text-sm">
                         <Link
                           to={`/review-details/${rating._id}`}
-                          className="w-full sm:w-auto select-none rounded bg-slate-800 py-2 px-6 text-center text-sm font-semibold text-white shadow-md shadow-slate-900/10 transition-all hover:shadow-lg hover:shadow-slate-900/20 active:opacity-[0.85]"
+                          className="inline-block whitespace-nowrap select-none rounded bg-slate-800 py-1.5 px-3 sm:py-2 sm:px-6 text-center text-xs sm:text-sm font-semibold text-white shadow-md shadow-slate-900/10 transition-all hover:shadow-lg hover:shadow-slate-900/20 active:opacity-[0.85]"
                         >
                           View Details
                         </Link>

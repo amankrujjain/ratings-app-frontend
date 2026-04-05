@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useRoles } from "../context/RoleContext";
 import DeleteConfirmationModal from "../components/DeleteConfirmationModal"; // Import the modal
+import { config } from '../../config';
 
-const BASE_URL = "http://localhost:5000";
+const BASE_URL = config.BASE_URL;
 
 const RolesTable = () => {
   const { roles, loading, error, createRole, updateRole, deleteRole } = useRoles();

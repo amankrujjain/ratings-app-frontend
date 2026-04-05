@@ -4,8 +4,9 @@ import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { useRating } from "../context/RatingContext";
 import SearchInput from "./SearchInput";
+import { config } from '../../config';
 
-const BASE_URL = "http://localhost:5000";
+const BASE_URL = config.BASE_URL;
 
 const SingleEmployeeRating = () => {
   const { employeeId } = useParams();

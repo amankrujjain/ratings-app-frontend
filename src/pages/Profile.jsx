@@ -1,8 +1,9 @@
 import { useContext } from "react";
 import { UserContext } from "../context/userContext";
 import { useNavigate, Link } from "react-router-dom";
+import { config } from '../../config';
 
-const BASE_URL = "http://localhost:5000";
+const BASE_URL = config.BASE_URL;
 
 function Profile() {
   const { user } = useContext(UserContext);
@@ -21,15 +22,15 @@ function Profile() {
     : "U";
 
   return (
-    <div className="min-h-[calc(100vh-70px)] bg-gradient-to-br from-slate-50 to-slate-100 px-4 py-8">
+    <div className="min-h-[calc(100vh-70px)] bg-gradient-to-br from-slate-50 to-slate-100 px-4 pt-20 pb-8 xl:py-8">
 
       <div className="max-w-2xl mx-auto">
 
         {/* Profile Card */}
-        <div className="bg-white rounded-lg shadow-md p-8 mb-6">
+        <div className="bg-white rounded-lg shadow-md p-5 sm:p-8 mb-6">
 
           {/* Header */}
-          <div className="flex items-start gap-6 pb-6 border-b border-slate-200">
+          <div className="flex flex-col items-center sm:flex-row sm:items-start gap-4 sm:gap-6 pb-6 border-b border-slate-200">
 
             {/* Avatar */}
             {user.employeePhoto ? (
@@ -48,8 +49,8 @@ function Profile() {
             )}
 
             {/* Name + Role */}
-            <div>
-              <h1 className="text-3xl font-bold text-slate-800">
+            <div className="text-center sm:text-left">
+              <h1 className="text-2xl sm:text-3xl font-bold text-slate-800">
                 {user.employeeName || "N/A"}
               </h1>
 

@@ -3,8 +3,9 @@ import { useEmployeeContext } from '../context/EmployeeContext';
 import AddEmployeeForm from '../components/AddEmployee';
 import DeleteConfirmationModal from '../components/DeleteConfirmationModal'; // Keep only the import
 import SearchInput from '../components/SearchInput';
+import { config } from '../../config';
 
-const BASE_URL = 'http://localhost:5000';
+const BASE_URL = config.BASE_URL;
 
 const EmployeeManagement = () => {
   const {

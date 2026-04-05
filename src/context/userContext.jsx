@@ -1,10 +1,8 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
+import { config } from '../../config';
 
-const backendUrl =
-  process.env.NODE_ENV === 'production'
-    ? 'https://your-production-url.com'
-    : 'http://localhost:5000/api';
+const backendUrl = `${config.BASE_URL}/api`;
 
 export const UserContext = createContext();
 

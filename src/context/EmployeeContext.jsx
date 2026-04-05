@@ -1,8 +1,9 @@
 import React, { createContext, useState, useContext } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { config } from '../../config';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = `${config.BASE_URL}/api`;
 
 export const EmployeeContext = createContext();
 
