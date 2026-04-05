@@ -268,9 +268,17 @@ function Navbar() {
           </button>
         </div>
 
+        {/* Overlay - closes sidebar on outside tap */}
+        {isMobileMenuOpen && (
+          <div
+            className="fixed inset-0 z-30 bg-black/30 xl:hidden"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+        )}
+
         {/* Mobile Sidebar */}
         <div
-          className={`w-64 xl:hidden h-full absolute z-40 top-0 bg-white shadow transition duration-150 ease-in-out ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+          className={`w-64 xl:hidden h-full fixed z-40 top-0 bg-white shadow transition duration-150 ease-in-out ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
             }`}
         >
           <div className="px-6 h-full">
@@ -374,6 +382,22 @@ function Navbar() {
                       </li>
                       <li className="text-gray-800 pt-8">
                         <Link to="/incentives" className="flex items-center">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="mr-2"
+                            width={20}
+                            height={20}
+                            viewBox="0 0 24 24"
+                            strokeWidth="1.5"
+                            stroke="currentColor"
+                            fill="none"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path stroke="none" d="M0 0h24v24H0z" />
+                            <path d="M12 1v22" />
+                            <path d="M17 5H9.5a3.5 3.5 0 000 7H14a3.5 3.5 0 010 7H6" />
+                          </svg>
                           <p className="text-gray-800 xl:text-base text-base ml-3">
                              Incentives
                           </p>
