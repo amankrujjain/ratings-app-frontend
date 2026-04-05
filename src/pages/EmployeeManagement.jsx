@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useEmployeeContext } from '../context/EmployeeContext';
 import AddEmployeeForm from '../components/AddEmployee';
 import DeleteConfirmationModal from '../components/DeleteConfirmationModal'; // Keep only the import
+import SearchInput from '../components/SearchInput';
 
 const BASE_URL = 'http://localhost:5000';
 
@@ -197,7 +198,7 @@ const confirmDelete = async (id) => {
   }
 };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading && employees.length === 0) return <div>Loading...</div>;
   console.log('Rendering employees:', employees);
 
   return (
@@ -211,29 +212,16 @@ const confirmDelete = async (id) => {
               <p className="text-slate-500">Review each person before edit</p>
             </div>
             {/* search input */}
-            <div className="relative flex items-center w-full max-w-xs">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                className="absolute left-3 w-4 h-4 text-slate-400"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1116.65 16.65z"
-                />
-              </svg>
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={handleSearch}
-                placeholder="Search members..."
-                className="pl-10 w-full h-10 bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md"
-              />
-            </div>
+            <SearchInput
+              value={searchTerm}
+              onChange={handleSearch}
+              onClear={() => {
+                setSearchTerm('');
+                setCurrentPage(1);
+              }}
+              placeholder="Search members..."
+              wrapperClassName="max-w-xs"
+            />
             <div className="flex flex-col gap-2 shrink-0 sm:flex-row">
               <button
                 className="flex items-center gap-2 rounded bg-slate-800 py-2.5 px-4 text-xs font-semibold text-white shadow-md shadow-slate-900/10 transition-all hover:shadow-lg hover:shadow-slate-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"

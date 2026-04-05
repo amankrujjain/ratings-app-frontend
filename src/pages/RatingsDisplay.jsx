@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useRating } from "../context/RatingContext";
 import DeleteConfirmationModal from "../components/DeleteConfirmationModal";
 import { Link } from "react-router-dom";
+import SearchInput from "../components/SearchInput";
 
 const BASE_URL = 'http://localhost:5000';
 
@@ -179,7 +180,7 @@ const RatingsDisplay = () => {
   //
   // Loading
   //
-  if (loading) {
+  if (loading && ratings.length === 0) {
     return (
       <div className="text-center py-4 text-gray-500">
         Loading ratings...
@@ -203,27 +204,27 @@ const RatingsDisplay = () => {
 
         {/* Header */}
         <div className="relative mx-4 mt-4 text-slate-700">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-              <div>
-                <h3 className="text-lg font-semibold text-slate-800">
-                  All Ratings
-                </h3>
-                <p className="text-slate-500">
-                  Review all customer ratings for employees
-                </p>
-              </div>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h3 className="text-lg font-semibold text-slate-800">
+                All Ratings
+              </h3>
+              <p className="text-slate-500">
+                Review all customer ratings for employees
+              </p>
+            </div>
 
-              {/* search box */}
-              <div>
-                <input
-                  type="text"
-                  value={searchTerm}
-                  onChange={handleSearch}
-                  placeholder="Search employees..."
-                  className="pl-10 w-full h-10 bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md"
-                />
-              </div>
+            <div className="w-full sm:flex-1 sm:flex sm:justify-center">
+              <SearchInput
+                value={searchTerm}
+                onChange={handleSearch}
+                onClear={() => {
+                  setSearchTerm("");
+                  setCurrentPage(1);
+                }}
+                placeholder="Search employees..."
+                wrapperClassName="sm:max-w-md"
+              />
             </div>
 
             {/* Button aligned right */}

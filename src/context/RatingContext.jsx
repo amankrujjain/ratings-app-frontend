@@ -71,16 +71,34 @@ export const RatingProvider = ({ children }) => {
     }
   }, [fetchWithAuth]);
 
-  // 🔹 Get Employee Ratings
-  const getEmployeeRatings = useCallback(async (employeeId) => {
+  // 🔹 Get Employee Ratings with optional query parameters (page, limit, sortBy, order, search)
+  const getEmployeeRatings = useCallback(async (employeeId, params = {}) => {
     setLoading(true);
+    setError(null);
+
     try {
-      const response = await fetchWithAuth(
-        `${API_BASE_URL}/ratings/employee-ratings/${employeeId}`
-      );
+      const query = new URLSearchParams(params).toString();
+      const endpoint = query
+        ? `${API_BASE_URL}/ratings/employee-ratings/${employeeId}?${query}`
+        : `${API_BASE_URL}/ratings/employee-ratings/${employeeId}`;
+
+      const response = await fetchWithAuth(endpoint);
       const data = await response.json();
-      console.log("Fetched employee ratings:", response);
-      setRatings(Array.isArray(data) ? data : []);
+      console.log("Fetched employee ratings:", data);
+
+      const list = Array.isArray(data) ? data : data?.data || [];
+      setRatings(list);
+
+      if (data?.pagination) {
+        setPagination(data.pagination);
+      } else {
+        setPagination({
+          totalItems: list.length,
+          totalPages: 1,
+          currentPage: 1,
+          limit: list.length || 10,
+        });
+      }
     } catch (err) {
       console.log("Error fetching employee ratings:", err);
       setError(err.message);
