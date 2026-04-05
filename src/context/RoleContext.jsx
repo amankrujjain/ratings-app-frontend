@@ -12,6 +12,12 @@ export const RoleProvider = ({ children }) => {
   const base_url = "http://localhost:5000/api";
 
   const fetchRoles = async () => {
+    if (!token) {
+      setRoles([]);
+      setError(null);
+      return;
+    }
+
     setLoading(true);
     try {
       const response = await fetch(`${base_url}/all-roles`, {
@@ -19,7 +25,14 @@ export const RoleProvider = ({ children }) => {
         headers: { "Authorization": `Bearer ${token}` },
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.message);
+      if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          setRoles([]);
+          setError(null);
+          return;
+        }
+        throw new Error(data.message);
+      }
       const filteredRoles = data.filter(
         (role) => role.name !== "admin" && role.name !== "subadmin"
       );
@@ -98,8 +111,10 @@ export const RoleProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    fetchRoles();
-  }, []);
+    if (token) {
+      fetchRoles();
+    }
+  }, [token]);
 
   return (
     <RoleContext.Provider value={{ roles, loading, error, createRole, updateRole, deleteRole }}>

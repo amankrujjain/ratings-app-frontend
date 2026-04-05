@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { UserContext } from "../context/userContext";
 
 function Navbar() {
-  const { user, logout, setUser } = useContext(UserContext);
+  const { user, logout } = useContext(UserContext);
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -13,7 +13,6 @@ function Navbar() {
   const handleLogout = async () => {
     console.log("Navbar - Logging out...");
     await logout();
-    setUser(null);
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     navigate("/login");

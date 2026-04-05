@@ -22,7 +22,7 @@ function ProtectedRoute({ children }) {
   const { user, loading } = useContext(UserContext);
   console.log("ProtectedRoute - loading:", loading, "user:", user);
   if (loading) return <div>Loading...</div>;
-  if (!user || !user.isLogin) return <Navigate to="/login" />;
+  if (!user) return <Navigate to="/login" />;
   return children;
 }
 
@@ -35,14 +35,14 @@ function App() {
       <Navbar />
       <Routes>
         {/* <Route path="/submit-review/:employeeId" element={<RatingSubmissionForm/>}/> */}
-        <Route path="/" element={user && user.isLogin ? <Navigate to="/profile" /> : <Login />} />
+        <Route path="/" element={user ? <Navigate to="/profile" /> : <Login />} />
         <Route
           path="/login"
-          element={user && user.isLogin ? <Navigate to="/profile" /> : <Login />}
+          element={user ? <Navigate to="/profile" /> : <Login />}
         />
         <Route
           path="/signup"
-          element={user && user.isLogin ? <Navigate to="/profile" /> : <SignUp />}
+          element={user ? <Navigate to="/profile" /> : <SignUp />}
         />
         <Route
           path="/profile"

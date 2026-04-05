@@ -28,9 +28,9 @@ export const WalletProvider = ({ children }) => {
     });
 
     if (response.status === 401) {
-      logout();
+      await logout(false);
       navigate("/login");
-      throw new Error("Session expired");
+      throw new Error("Session expired. Please log in again.");
     }
 
     if (!response.ok) {

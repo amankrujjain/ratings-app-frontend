@@ -59,7 +59,7 @@ const ReviewDetails = () => {
         review.feedback?.match(/#(\w+)/)?.[1] || review.employee?.employeeId;
 
     return (
-        <div className="min-h-screen w-full bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50">
+        <div className="min-h-[calc(100vh-70px)] w-full bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50">
 
             {/* Responsive Container */}
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -177,9 +177,28 @@ const ReviewDetails = () => {
                                     </span>
                                 </p>
 
-                                <p className="text-sm text-emerald-600 font-medium mt-1">
-                                    Excellent Rating
-                                </p>
+                                {/* rating text/color */}
+                                {(() => {
+                                    let text = "";
+                                    let colorClass = "";
+
+                                    if (review.rating >= 4) {
+                                        text = "Excellent Rating";
+                                        colorClass = "text-emerald-600";
+                                    } else if (review.rating === 3) {
+                                        text = "Good job, keep going";
+                                        colorClass = "text-amber-500"; // orange
+                                    } else {
+                                        text = "Needs improvement";
+                                        colorClass = "text-rose-600"; // red
+                                    }
+
+                                    return (
+                                        <p className={`text-sm ${colorClass} font-medium mt-1`}>
+                                            {text}
+                                        </p>
+                                    );
+                                })()}
                             </div>
 
                             {/* Customer */}

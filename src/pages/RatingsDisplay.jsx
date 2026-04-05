@@ -7,20 +7,134 @@ import { Link } from "react-router-dom";
 const BASE_URL = 'http://localhost:5000';
 
 const RatingsDisplay = () => {
-  const { ratings, loading, error, getAllRatings, deleteRating } = useRating();
+  const { ratings, pagination, loading, error, getAllRatings, deleteRating } = useRating();
+
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedRatingId, setSelectedRatingId] = useState(null);
   const [isSyncing, setIsSyncing] = useState(false);
 
-  useEffect(() => {
-    getAllRatings();
-  }, [getAllRatings]);
+  // pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
 
+  // sorting
+  const [sortBy, setSortBy] = useState("createdAt");
+  const [order, setOrder] = useState("desc");
+
+  // search
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState(searchTerm);
+
+  //
+  // Debounce Search (same as employees)
+  //
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+    }, 300);
+
+    return () => clearTimeout(handler);
+  }, [searchTerm]);
+
+  //
+  // Fetch Ratings
+  //
+  useEffect(() => {
+    const params = {
+      page: currentPage,
+      limit: itemsPerPage,
+      sortBy,
+      order,
+    };
+
+    if (debouncedSearch) {
+      params.search = debouncedSearch;
+    }
+
+    getAllRatings(params).catch((err) =>
+      console.error("Fetch ratings failed:", err)
+    );
+  }, [currentPage, itemsPerPage, sortBy, order, debouncedSearch]);
+
+  //
+  // Sorting
+  //
+  const handleSort = (field) => {
+    if (sortBy === field) {
+      setOrder((prev) => (prev === "asc" ? "desc" : "asc"));
+    } else {
+      setSortBy(field);
+      setOrder("asc");
+    }
+
+    setCurrentPage(1);
+  };
+
+  //
+  // Pagination
+  //
+  const totalPages = pagination?.totalPages || 1;
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage((prev) => prev + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+    }
+  };
+
+  //
+  // Search handler
+  //
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1);
+  };
+
+  //
+  // Delete
+  //
   const handleDeleteClick = (ratingId) => {
     setSelectedRatingId(ratingId);
     setDeleteModalOpen(true);
   };
 
+  const confirmDelete = async (ratingId) => {
+    try {
+      await deleteRating(ratingId);
+
+      // If last item deleted on page
+      if (ratings.length === 1 && currentPage > 1) {
+        setCurrentPage((prev) => prev - 1);
+      } else {
+        const params = {
+          page: currentPage,
+          limit: itemsPerPage,
+          sortBy,
+          order,
+        };
+
+        if (debouncedSearch) params.search = debouncedSearch;
+
+        getAllRatings(params);
+      }
+
+      setDeleteModalOpen(false);
+      setSelectedRatingId(null);
+    } catch (error) {
+      console.error("Delete failed:", error);
+      setDeleteModalOpen(false);
+      setSelectedRatingId(null);
+    }
+  };
+
+  //
+  // Sync GMB Reviews
+  //
   const handleSyncGMB = async () => {
     try {
       setIsSyncing(true);
@@ -28,7 +142,7 @@ const RatingsDisplay = () => {
       const token = localStorage.getItem("accessToken");
 
       const response = await fetch("http://localhost:5000/gmb/sync", {
-        method: "GET", // change to GET if your API uses GET
+        method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -43,8 +157,16 @@ const RatingsDisplay = () => {
 
       alert("GMB Reviews synced successfully ✅");
 
-      // refresh ratings after sync
-      getAllRatings();
+      const params = {
+        page: currentPage,
+        limit: itemsPerPage,
+        sortBy,
+        order,
+      };
+
+      if (debouncedSearch) params.search = debouncedSearch;
+
+      getAllRatings(params);
 
     } catch (error) {
       console.error("Sync Error:", error);
@@ -54,159 +176,303 @@ const RatingsDisplay = () => {
     }
   };
 
-  const confirmDelete = (ratingId) => {
-    deleteRating(ratingId);
-    setDeleteModalOpen(false);
-    setSelectedRatingId(null);
-  };
-
+  //
+  // Loading
+  //
   if (loading) {
-    return <div className="text-center py-4 text-gray-500">Loading ratings...</div>;
-  }
-
-  if (error) {
-    return <div className="text-center py-4 text-red-500">Error: {error}</div>;
-  }
-
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">
-          All Ratings
-        </h2>
-
-        {/* Button aligned to right like Actions column */}
-        <div className="flex justify-end">
-          <button
-            onClick={handleSyncGMB}
-            disabled={isSyncing}
-            className="inline-flex items-center justify-center gap-2
-             w-full sm:w-auto
-             select-none rounded
-             bg-slate-800
-             py-2 px-6
-             text-center text-sm font-semibold text-white
-             shadow-md shadow-slate-900/10
-             transition-all
-             hover:shadow-lg hover:shadow-slate-900/20
-             active:opacity-[0.85]
-             disabled:pointer-events-none
-             disabled:opacity-50
-             disabled:shadow-none"
-          >
-            {isSyncing && (
-              <svg
-                className="w-4 h-4 animate-spin"
-                viewBox="0 0 24 24"
-                fill="none"
-              >
-                <circle
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                  className="opacity-25"
-                />
-                <path
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8v8H4z"
-                  className="opacity-75"
-                />
-              </svg>
-            )}
-
-            {isSyncing ? "Syncing..." : "Sync GMB Reviews"}
-          </button>
-        </div>
+    return (
+      <div className="text-center py-4 text-gray-500">
+        Loading ratings...
       </div>
-      {ratings.length === 0 ? (
-        <p className="text-gray-500 text-center">No ratings found.</p>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employee Photo</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employee ID</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employee Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">GMB Rating ID</th>
-                {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer Phone</th> */}
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rating</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-                {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">In Range</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th> */}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {ratings.map((rating) => (
-                <tr key={rating._id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {/* <Link to={`/employee-reviews/${rating.employee?._id}`}> */}
-                    <img
-                      src={
-                        rating.employee?.employeePhoto
-                          ? `${BASE_URL}/${rating.employee.employeePhoto.replace(/\\/g, '/')}`
-                          : 'https://via.placeholder.com/40'
-                      }
-                      alt="Employee"
-                      className="w-10 h-10 rounded-full object-cover"
-                    />
-                    {/* </Link> */}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {/* <Link to={`/employee-reviews/${rating.employee?._id}`}> */}
-                    {rating.employee?.employeeId || "N/A"}
-                    {/* </Link> */}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {/* <Link to={`/employee-reviews/${rating.employee?._id}`}> */}
-                    {rating.employee?.employeeName || "N/A"}
-                    {/* </Link> */}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{rating.customerName || "N/A"}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{rating.googleReviewId || "N/A"}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{rating.rating}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    <Link
-                      to={`/review-details/${rating._id}`}
-                      className="w-full sm:w-auto select-none rounded bg-slate-800 py-2 px-6 text-center text-sm font-semibold text-white shadow-md shadow-slate-900/10 transition-all hover:shadow-lg hover:shadow-slate-900/20 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-                    >
-                      View Details
-                    </Link>
-                  </td>
-                  {/* <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    <span className={`px-2 py-1 rounded-full text-white ${rating.inRange ? 'bg-green-500' : 'bg-red-500'}`} title={rating.inRange ? "With in range":"Outside of range"}>
-                      {rating.inRange ? 'Yes' : 'No'}
-                    </span>
-                  </td> */}
-                  {/* <td className="px-6 py-4 whitespace-nowrap text-sm" onClick={e => e.stopPropagation()}>
-                    <button
-                      onClick={() => handleDeleteClick(rating._id)}
-                      className="px-3 py-1 bg-red-500 text-white rounded"
-                      title="delete"
-                    >
-                      Delete
-                    </button>
-                  </td> */}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+    );
+  }
+
+  //
+  // Error
+  //
+  if (error) {
+    return (
+      <div className="text-center py-4 text-red-500">
+        Error: {error}
+      </div>
+    );
+  }
+  return (
+    <div className="flex flex-col w-full min-h-screen bg-gray-100">
+      <div className="relative flex flex-col w-full max-w-screen-2xl mx-auto my-16 px-4 sm:px-6 lg:px-8 bg-white shadow-lg rounded-xl p-5 overflow-hidden">
+
+        {/* Header */}
+        <div className="relative mx-4 mt-4 text-slate-700">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+              <div>
+                <h3 className="text-lg font-semibold text-slate-800">
+                  All Ratings
+                </h3>
+                <p className="text-slate-500">
+                  Review all customer ratings for employees
+                </p>
+              </div>
+
+              {/* search box */}
+              <div>
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={handleSearch}
+                  placeholder="Search employees..."
+                  className="pl-10 w-full h-10 bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md"
+                />
+              </div>
+            </div>
+
+            {/* Button aligned right */}
+            <button
+              onClick={handleSyncGMB}
+              disabled={isSyncing}
+              className="inline-flex items-center justify-center gap-2
+          w-full sm:w-auto
+          select-none rounded
+          bg-slate-800
+          py-2 px-6
+          text-center text-sm font-semibold text-white
+          shadow-md shadow-slate-900/10
+          transition-all
+          hover:shadow-lg hover:shadow-slate-900/20
+          active:opacity-[0.85]
+          disabled:pointer-events-none
+          disabled:opacity-50
+          disabled:shadow-none"
+            >
+              {isSyncing && (
+                <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    className="opacity-25"
+                  />
+                  <path
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v8H4z"
+                    className="opacity-75"
+                  />
+                </svg>
+              )}
+
+              {isSyncing ? "Syncing..." : "Sync GMB Reviews"}
+            </button>
+          </div>
         </div>
-      )}
-      <DeleteConfirmationModal
-        isOpen={isDeleteModalOpen}
-        onClose={() => {
-          setDeleteModalOpen(false);
-          setSelectedRatingId(null);
-        }}
-        onConfirm={confirmDelete}
-        ratingId={selectedRatingId}
-      />
+
+        {ratings.length === 0 ? (
+          <p className="text-gray-500 text-center py-10">No ratings found.</p>
+        ) : (
+          <>
+            <div className="overflow-x-auto mt-6">
+              <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm">
+                <thead className="bg-gray-100">
+                  <tr>
+
+                    <th
+                      onClick={() => handleSort("employee")}
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                    >
+                      <p className="flex items-center justify-between gap-2">
+                        Employee Photo
+                      </p>
+                    </th>
+
+                    <th
+                      onClick={() => handleSort("employeeId")}
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                    >
+                      <p className="flex items-center justify-between gap-2">
+                        Employee ID
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth="2"
+                          stroke="currentColor"
+                          className={`w-4 h-4 transform transition-transform ${sortBy === 'employeeId' && order === 'desc' ? 'rotate-180' : ''}`}
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"></path>
+                        </svg>
+                      </p>
+                    </th>
+
+                    <th
+                      onClick={() => handleSort("employeeName")}
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                    >
+                      <p className="flex items-center justify-between gap-2">
+                        Employee Name
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth="2"
+                          stroke="currentColor"
+                          className={`w-4 h-4 transform transition-transform ${sortBy === 'employeeName' && order === 'desc' ? 'rotate-180' : ''}`}
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"></path>
+                        </svg>
+                      </p>
+                    </th>
+
+                    <th
+                      onClick={() => handleSort("customerName")}
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                    >
+                      <p className="flex items-center justify-between gap-2">
+                        Customer Name
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth="2"
+                          stroke="currentColor"
+                          className={`w-4 h-4 transform transition-transform ${sortBy === 'customerName' && order === 'desc' ? 'rotate-180' : ''}`}
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"></path>
+                        </svg>
+                      </p>
+                    </th>
+
+                    <th
+                      onClick={() => handleSort("googleReviewId")}
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                    >
+                      <p className="flex items-center justify-between gap-2">
+                        GMB Rating ID
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth="2"
+                          stroke="currentColor"
+                          className={`w-4 h-4 transform transition-transform ${sortBy === 'googleReviewId' && order === 'desc' ? 'rotate-180' : ''}`}
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"></path>
+                        </svg>
+                      </p>
+                    </th>
+
+                    <th
+                      onClick={() => handleSort("rating")}
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                    >
+                      <p className="flex items-center justify-between gap-2">
+                        Rating
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth="2"
+                          stroke="currentColor"
+                          className={`w-4 h-4 transform transition-transform ${sortBy === 'googleReviewId' && order === 'desc' ? 'rotate-180' : ''}`}
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"></path>
+                        </svg>
+                      </p>
+                    </th>
+
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
+
+                  </tr>
+                </thead>
+
+                <tbody className="divide-y divide-gray-200">
+                  {ratings.map((rating) => (
+                    <tr key={rating._id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4">
+                        <img
+                          src={
+                            rating.employee?.employeePhoto
+                              ? `${BASE_URL}/${rating.employee.employeePhoto.replace(/\\/g, '/')}`
+                              : 'https://via.placeholder.com/40'
+                          }
+                          alt="Employee"
+                          className="w-10 h-10 rounded-full object-cover"
+                        />
+                      </td>
+
+                      <td className="px-6 py-4 text-sm text-gray-900">
+                        {rating.employee?.employeeId || "N/A"}
+                      </td>
+
+                      <td className="px-6 py-4 text-sm text-gray-900">
+                        {rating.employee?.employeeName || "N/A"}
+                      </td>
+
+                      <td className="px-6 py-4 text-sm text-gray-900">
+                        {rating.customerName || "N/A"}
+                      </td>
+
+                      <td className="px-6 py-4 text-sm text-gray-900">
+                        {rating.googleReviewId || "N/A"}
+                      </td>
+
+                      <td className="px-6 py-4 text-sm text-gray-900">
+                        {rating.rating}
+                      </td>
+
+                      <td className="px-6 py-4 text-sm">
+                        <Link
+                          to={`/review-details/${rating._id}`}
+                          className="w-full sm:w-auto select-none rounded bg-slate-800 py-2 px-6 text-center text-sm font-semibold text-white shadow-md shadow-slate-900/10 transition-all hover:shadow-lg hover:shadow-slate-900/20 active:opacity-[0.85]"
+                        >
+                          View Details
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Pagination */}
+            <div className="flex items-center justify-between p-3">
+              <p className="text-sm text-slate-500">
+                Page {currentPage} of {totalPages || 1}
+              </p>
+
+              <div className="flex gap-1">
+                <button
+                  onClick={handlePrevPage}
+                  disabled={currentPage <= 1}
+                  className="rounded border border-slate-300 py-2.5 px-3 text-xs font-semibold text-slate-600 transition-all hover:opacity-75 disabled:opacity-50"
+                >
+                  Previous
+                </button>
+
+                <button
+                  onClick={handleNextPage}
+                  disabled={currentPage >= totalPages}
+                  className="rounded border border-slate-300 py-2.5 px-3 text-xs font-semibold text-slate-600 transition-all hover:opacity-75 disabled:opacity-50"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          </>
+        )}
+
+        <DeleteConfirmationModal
+          isOpen={isDeleteModalOpen}
+          onClose={() => {
+            setDeleteModalOpen(false);
+            setSelectedRatingId(null);
+          }}
+          onConfirm={confirmDelete}
+          ratingId={selectedRatingId}
+        />
+      </div>
     </div>
   );
 };
