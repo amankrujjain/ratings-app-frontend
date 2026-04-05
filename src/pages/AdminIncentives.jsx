@@ -12,8 +12,11 @@ function AdminIncentives() {
     const [reportType, setReportType] = useState("monthly");
 
     useEffect(() => {
-        getMonthlySummary(selectedMonth, selectedYear);
-    }, [selectedMonth, selectedYear]);
+        if (reportType === "monthly") {
+            getMonthlySummary(selectedMonth, selectedYear);
+        }
+        // For yearly, do not fetch or set summary
+    }, [selectedMonth, selectedYear, reportType]);
 
     const months = [
         { name: "January", value: 1 },
@@ -36,15 +39,12 @@ function AdminIncentives() {
 
     const handleExport = () => {
         const token = localStorage.getItem("accessToken");
-
         let url;
-
         if (reportType === "monthly") {
             url = `http://localhost:5000/incentive/export-monthly?month=${selectedMonth}&year=${selectedYear}`;
         } else {
             url = `http://localhost:5000/incentive/export-yearly?year=${selectedYear}`;
         }
-
         fetch(url, {
             headers: { Authorization: `Bearer ${token}` },
         })
@@ -217,87 +217,87 @@ function AdminIncentives() {
 
                 </div>
 
-                {/* Table */}
-                <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-                    <div className="overflow-x-auto">
-                        <table className="w-full">
-
-                            <thead>
-                                <tr className="bg-slate-50 border-b border-slate-200">
-                                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wide">
-                                        Employee
-                                    </th>
-                                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wide">
-                                        Total Reviews
-                                    </th>
-                                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wide">
-                                        Avg Rating
-                                    </th>
-                                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wide">
-                                        ₹ / Review
-                                    </th>
-                                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wide">
-                                        Total Incentive
-                                    </th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                                {loading ? (
-                                    <tr>
-                                        <td colSpan="5" className="px-6 py-8 text-center text-slate-500">
-                                            Loading...
-                                        </td>
-                                    </tr>
-                                ) : summary.length === 0 ? (
-                                    <tr>
-                                        <td colSpan="5" className="px-6 py-8 text-center text-slate-500">
-                                            No data available
-                                        </td>
-                                    </tr>
-                                ) : (
-                                    summary.map((item) => (
-                                        <tr
-                                            key={item.employeeId}
-                                            className="border-b border-slate-200 hover:bg-slate-50"
-                                        >
-                                            <td className="px-6 py-4 text-sm text-slate-800 font-medium">
-                                                {item.employeeName}
-                                            </td>
-                                            <td className="px-6 py-4 text-sm text-slate-700">
-                                                {item.totalReviews}
-                                            </td>
-                                            <td className="px-6 py-4 text-sm text-slate-700">
-                                                <span className="text-amber-600">
-                                                    ⭐ {item.averageRating}
-                                                </span>
-                                            </td>
-                                            <td className="px-6 py-4 text-sm text-slate-700">
-                                                ₹ {item.incentivePerReview}
-                                            </td>
-                                            <td className="px-6 py-4 text-sm font-semibold text-green-600">
-                                                ₹ {item.totalIncentive}
-                                            </td>
+                {/* Table and Total only for Monthly */}
+                {reportType === "monthly" && (
+                    <>
+                        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+                            <div className="overflow-x-auto">
+                                <table className="w-full">
+                                    <thead>
+                                        <tr className="bg-slate-50 border-b border-slate-200">
+                                            <th className="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wide">
+                                                Employee
+                                            </th>
+                                            <th className="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wide">
+                                                Total Reviews
+                                            </th>
+                                            <th className="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wide">
+                                                Avg Rating
+                                            </th>
+                                            <th className="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wide">
+                                                ₹ / Review
+                                            </th>
+                                            <th className="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wide">
+                                                Total Incentive
+                                            </th>
                                         </tr>
-                                    ))
-                                )}
-                            </tbody>
-
-                        </table>
-                    </div>
-                </div>
-
-                {/* Total */}
-                <div className="flex justify-end mt-6 p-4 bg-slate-100 rounded-lg">
-                    <div className="text-right">
-                        <p className="text-xs text-slate-500 mb-1">
-                            Total Incentive for Period
-                        </p>
-                        <p className="text-2xl font-bold text-slate-800">
-                            ₹ {totalIncentive}
-                        </p>
-                    </div>
-                </div>
+                                    </thead>
+                                    <tbody>
+                                        {loading ? (
+                                            <tr>
+                                                <td colSpan="5" className="px-6 py-8 text-center text-slate-500">
+                                                    Loading...
+                                                </td>
+                                            </tr>
+                                        ) : summary.length === 0 ? (
+                                            <tr>
+                                                <td colSpan="5" className="px-6 py-8 text-center text-slate-500">
+                                                    No data available
+                                                </td>
+                                            </tr>
+                                        ) : (
+                                            summary.map((item) => (
+                                                <tr
+                                                    key={item.employeeId}
+                                                    className="border-b border-slate-200 hover:bg-slate-50"
+                                                >
+                                                    <td className="px-6 py-4 text-sm text-slate-800 font-medium">
+                                                        {item.employeeName}
+                                                    </td>
+                                                    <td className="px-6 py-4 text-sm text-slate-700">
+                                                        {item.totalReviews}
+                                                    </td>
+                                                    <td className="px-6 py-4 text-sm text-slate-700">
+                                                        <span className="text-amber-600">
+                                                            ⭐ {item.averageRating}
+                                                        </span>
+                                                    </td>
+                                                    <td className="px-6 py-4 text-sm text-slate-700">
+                                                        ₹ {item.incentivePerReview}
+                                                    </td>
+                                                    <td className="px-6 py-4 text-sm font-semibold text-green-600">
+                                                        ₹ {item.totalIncentive}
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        {/* Total */}
+                        <div className="flex justify-end mt-6 p-4 bg-slate-100 rounded-lg">
+                            <div className="text-right">
+                                <p className="text-xs text-slate-500 mb-1">
+                                    Total Incentive for Period
+                                </p>
+                                <p className="text-2xl font-bold text-slate-800">
+                                    ₹ {totalIncentive}
+                                </p>
+                            </div>
+                        </div>
+                    </>
+                )}
 
             </div>
         </div>
