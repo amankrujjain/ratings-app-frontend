@@ -2,6 +2,7 @@
 import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { UserContext } from "../context/userContext";
+import NotificationBell from "./NotificationBell";
 
 function Navbar() {
   const { user, logout } = useContext(UserContext);
@@ -213,8 +214,9 @@ function Navbar() {
                   </svg>
                   Profile
                 </Link>
-                {/* Logout Button for All Users */}
-                <div className="hidden xl:flex items-center">
+                {/* Notifications & Logout */}
+                <div className="hidden xl:flex items-center gap-2">
+                  <NotificationBell />
                   <button
                     onClick={handleLogout}
                     className="focus:outline-none bg-gray-100 border-gray-300 border transition duration-150 ease-in-out hover:bg-gray-300 rounded text-gray-600 px-5 py-2 text-xs"
@@ -245,10 +247,12 @@ function Navbar() {
             </svg>
             <p className="text-base md:text-2xl text-gray-800 ml-3">Dashboard Admin</p>
           </div>
-          <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="text-gray-800"
-          >
+          <div className="flex items-center gap-2">
+            <NotificationBell />
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="text-gray-800"
+            >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width={24}
@@ -266,6 +270,7 @@ function Navbar() {
               <line x1={4} y1={18} x2={20} y2={18} />
             </svg>
           </button>
+          </div>
         </div>
 
         {/* Overlay - closes sidebar on outside tap */}

@@ -127,18 +127,18 @@ const SingleEmployeeRating = () => {
         ) : (
           <>
             <div className="overflow-x-auto mt-6">
-              <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm">
+              <table className="w-full table-fixed bg-white border border-gray-200 rounded-lg shadow-sm">
                 <thead className="bg-gray-100">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="w-[14%] px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Employee
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="w-[10%] px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Employee ID
                     </th>
                     <th
                       onClick={() => handleSort("customerName")}
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                      className="w-[13%] px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
                     >
                       <p className="flex items-center gap-2">
                         Customer Name
@@ -164,7 +164,7 @@ const SingleEmployeeRating = () => {
                     </th>
                     <th
                       onClick={() => handleSort("rating")}
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                      className="w-[8%] px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
                     >
                       <p className="flex items-center gap-2">
                         Rating
@@ -190,7 +190,7 @@ const SingleEmployeeRating = () => {
                     </th>
                     <th
                       onClick={() => handleSort("googleReviewId")}
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                      className="w-[20%] px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
                     >
                       <p className="flex items-center gap-2">
                         GMB Rating ID
@@ -216,7 +216,7 @@ const SingleEmployeeRating = () => {
                     </th>
                     <th
                       onClick={() => handleSort("source")}
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                      className="w-[8%] px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
                     >
                       <p className="flex items-center gap-2">
                         Source
@@ -242,7 +242,7 @@ const SingleEmployeeRating = () => {
                     </th>
                     <th
                       onClick={() => handleSort("createdAt")}
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                      className="w-[10%] px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
                     >
                       <p className="flex items-center gap-2">
                         Date
@@ -266,7 +266,7 @@ const SingleEmployeeRating = () => {
                         </svg>
                       </p>
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="w-[12%] px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
@@ -274,7 +274,7 @@ const SingleEmployeeRating = () => {
                 <tbody className="divide-y divide-gray-200">
                   {ratings.map((rating) => (
                     <tr key={rating._id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-4 py-4 whitespace-nowrap">
                         <div className="flex items-center gap-3">
                           <img
                             src={
@@ -293,27 +293,27 @@ const SingleEmployeeRating = () => {
                           </span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                         {rating.employee?.employeeId || "N/A"}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                         {rating.customerName || "N/A"}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                         {rating.rating ?? "N/A"}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <td className="px-4 py-4 text-sm text-gray-900 truncate" title={rating.googleReviewId || ""}>
                         {rating.googleReviewId || "N/A"}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                         {rating.source || "N/A"}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                         {rating.createdAt
                           ? new Date(rating.createdAt).toLocaleDateString("en-GB")
                           : "N/A"}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      <td className="px-4 py-4 whitespace-nowrap text-sm">
                         <Link
                           to={`/review-details/${rating._id}`}
                           className="inline-flex items-center gap-2 w-full sm:w-auto select-none rounded bg-slate-800 py-2 px-6 text-center text-sm font-semibold text-white shadow-md shadow-slate-900/10 transition-all hover:shadow-lg hover:shadow-slate-900/20 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"

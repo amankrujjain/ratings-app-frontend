@@ -1,10 +1,10 @@
-// src/pages/RatingsDisplay.jsx
 import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 import { useRating } from "../context/RatingContext";
 import DeleteConfirmationModal from "../components/DeleteConfirmationModal";
-import { Link } from "react-router-dom";
 import SearchInput from "../components/SearchInput";
-import { config } from '../../config';
+import { config } from "../../config";
 
 const BASE_URL = config.BASE_URL;
 
@@ -14,22 +14,19 @@ const RatingsDisplay = () => {
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedRatingId, setSelectedRatingId] = useState(null);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [isReauthorizingGMB, setIsReauthorizingGMB] = useState(false);
+  const [gmbSyncState, setGmbSyncState] = useState({
+    requiresReauth: false,
+    message: "",
+  });
 
-  // pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
-
-  // sorting
   const [sortBy, setSortBy] = useState("createdAt");
   const [order, setOrder] = useState("desc");
-
-  // search
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState(searchTerm);
 
-  //
-  // Debounce Search (same as employees)
-  //
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearch(searchTerm);
@@ -38,9 +35,36 @@ const RatingsDisplay = () => {
     return () => clearTimeout(handler);
   }, [searchTerm]);
 
-  //
-  // Fetch Ratings
-  //
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const gmbConnected = params.get("gmb_connected");
+    const gmbAuthorized = params.get("gmb_authorized");
+    const gmbError = params.get("error");
+
+    if (gmbConnected === "true" && gmbAuthorized === "true") {
+      toast.success("Google Business account connected. You can sync reviews now.");
+      setGmbSyncState({ requiresReauth: false, message: "" });
+    } else if (gmbConnected === "false") {
+      const message =
+        gmbError || "Google Business authorization failed. Please re-authorize and try again.";
+      toast.error(message);
+      setGmbSyncState({ requiresReauth: true, message });
+    }
+
+    if (gmbConnected) {
+      params.delete("gmb_connected");
+      params.delete("gmb_authorized");
+      params.delete("gmb_error");
+      params.delete("error");
+      const nextQuery = params.toString();
+      window.history.replaceState(
+        {},
+        "",
+        `${window.location.pathname}${nextQuery ? `?${nextQuery}` : ""}`
+      );
+    }
+  }, []);
+
   useEffect(() => {
     const params = {
       page: currentPage,
@@ -53,14 +77,9 @@ const RatingsDisplay = () => {
       params.search = debouncedSearch;
     }
 
-    getAllRatings(params).catch((err) =>
-      console.error("Fetch ratings failed:", err)
-    );
+    getAllRatings(params).catch((err) => console.error("Fetch ratings failed:", err));
   }, [currentPage, itemsPerPage, sortBy, order, debouncedSearch]);
 
-  //
-  // Sorting
-  //
   const handleSort = (field) => {
     if (sortBy === field) {
       setOrder((prev) => (prev === "asc" ? "desc" : "asc"));
@@ -72,9 +91,6 @@ const RatingsDisplay = () => {
     setCurrentPage(1);
   };
 
-  //
-  // Pagination
-  //
   const totalPages = pagination?.totalPages || 1;
 
   const handleNextPage = () => {
@@ -89,17 +105,11 @@ const RatingsDisplay = () => {
     }
   };
 
-  //
-  // Search handler
-  //
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
     setCurrentPage(1);
   };
 
-  //
-  // Delete
-  //
   const handleDeleteClick = (ratingId) => {
     setSelectedRatingId(ratingId);
     setDeleteModalOpen(true);
@@ -109,7 +119,6 @@ const RatingsDisplay = () => {
     try {
       await deleteRating(ratingId);
 
-      // If last item deleted on page
       if (ratings.length === 1 && currentPage > 1) {
         setCurrentPage((prev) => prev - 1);
       } else {
@@ -121,43 +130,42 @@ const RatingsDisplay = () => {
         };
 
         if (debouncedSearch) params.search = debouncedSearch;
-
         getAllRatings(params);
       }
 
       setDeleteModalOpen(false);
       setSelectedRatingId(null);
-    } catch (error) {
-      console.error("Delete failed:", error);
+    } catch (deleteError) {
+      console.error("Delete failed:", deleteError);
       setDeleteModalOpen(false);
       setSelectedRatingId(null);
     }
   };
 
-  //
-  // Sync GMB Reviews
-  //
   const handleSyncGMB = async () => {
     try {
       setIsSyncing(true);
+      setGmbSyncState({ requiresReauth: false, message: "" });
 
       const token = localStorage.getItem("accessToken");
-
-      const response = await fetch(`${config.BASE_URL}/gmb/sync`, {
+      const response = await fetch(`${config.BASE_URL}/api/gmb/sync`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
+        credentials: "include",
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Sync failed");
+        const syncError = new Error(data.message || "Sync failed");
+        syncError.requiresReauth = Boolean(data.requiresReauth);
+        throw syncError;
       }
 
-      alert("GMB Reviews synced successfully ✅");
+      toast.success(data.message || "GMB reviews synced successfully.");
 
       const params = {
         page: currentPage,
@@ -167,52 +175,67 @@ const RatingsDisplay = () => {
       };
 
       if (debouncedSearch) params.search = debouncedSearch;
-
       getAllRatings(params);
+    } catch (syncError) {
+      console.error("Sync Error:", syncError);
 
-    } catch (error) {
-      console.error("Sync Error:", error);
-      alert(error.message || "Sync failed");
+      if (syncError.requiresReauth) {
+        setGmbSyncState({
+          requiresReauth: true,
+          message: "Google Business authentication expired or is invalid. Please re-authorize and try again.",
+        });
+      }
+
+      toast.error(syncError.message || "Sync failed");
     } finally {
       setIsSyncing(false);
     }
   };
 
-  //
-  // Loading
-  //
+  const handleReconnectGMB = async () => {
+    try {
+      setIsReauthorizingGMB(true);
+
+      const token = localStorage.getItem("accessToken");
+      const response = await fetch(`${config.BASE_URL}/api/gmb/oauth/url`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+
+      const data = await response.json();
+      if (!response.ok || !data.authUrl) {
+        throw new Error(data.message || "Failed to start Google authorization");
+      }
+
+      window.location.href = data.authUrl;
+    } catch (authError) {
+      console.error("GMB authorization error:", authError);
+      toast.error(authError.message || "Failed to start Google authorization");
+    } finally {
+      setIsReauthorizingGMB(false);
+    }
+  };
+
   if (loading && ratings.length === 0) {
-    return (
-      <div className="text-center py-4 text-gray-500">
-        Loading ratings...
-      </div>
-    );
+    return <div className="text-center py-4 text-gray-500">Loading ratings...</div>;
   }
 
-  //
-  // Error
-  //
   if (error) {
-    return (
-      <div className="text-center py-4 text-red-500">
-        Error: {error}
-      </div>
-    );
+    return <div className="text-center py-4 text-red-500">Error: {error}</div>;
   }
+
   return (
     <div className="flex flex-col w-full min-h-screen bg-gray-100">
       <div className="relative flex flex-col w-full max-w-screen-2xl mx-auto my-16 px-4 sm:px-6 lg:px-8 bg-white shadow-lg rounded-xl p-5 overflow-hidden">
-
-        {/* Header */}
         <div className="relative mx-4 mt-4 text-slate-700">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h3 className="text-lg font-semibold text-slate-800">
-                All Ratings
-              </h3>
-              <p className="text-slate-500">
-                Review all customer ratings for employees
-              </p>
+              <h3 className="text-lg font-semibold text-slate-800">All Ratings</h3>
+              <p className="text-slate-500">Review all customer ratings for employees</p>
             </div>
 
             <div className="w-full sm:flex-1 sm:flex sm:justify-center">
@@ -228,23 +251,10 @@ const RatingsDisplay = () => {
               />
             </div>
 
-            {/* Button aligned right */}
             <button
               onClick={handleSyncGMB}
               disabled={isSyncing}
-              className="inline-flex items-center justify-center gap-2
-          w-full sm:w-auto
-          select-none rounded
-          bg-slate-800
-          py-2 px-6
-          text-center text-sm font-semibold text-white
-          shadow-md shadow-slate-900/10
-          transition-all
-          hover:shadow-lg hover:shadow-slate-900/20
-          active:opacity-[0.85]
-          disabled:pointer-events-none
-          disabled:opacity-50
-          disabled:shadow-none"
+              className="inline-flex items-center justify-center gap-2 w-full sm:w-auto select-none rounded bg-slate-800 py-2 px-6 text-center text-sm font-semibold text-white shadow-md shadow-slate-900/10 transition-all hover:shadow-lg hover:shadow-slate-900/20 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
             >
               {isSyncing && (
                 <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
@@ -267,6 +277,19 @@ const RatingsDisplay = () => {
               {isSyncing ? "Syncing..." : "Sync GMB Reviews"}
             </button>
           </div>
+
+          {gmbSyncState.requiresReauth && (
+            <div className="mt-4 rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+              <p>{gmbSyncState.message}</p>
+              <button
+                onClick={handleReconnectGMB}
+                disabled={isReauthorizingGMB}
+                className="mt-3 inline-flex items-center justify-center rounded bg-amber-600 px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-amber-700 disabled:pointer-events-none disabled:opacity-60"
+              >
+                {isReauthorizingGMB ? "Opening Google..." : "Re-authorize Google Business"}
+              </button>
+            </div>
+          )}
         </div>
 
         {ratings.length === 0 ? (
@@ -277,14 +300,11 @@ const RatingsDisplay = () => {
               <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm">
                 <thead className="bg-gray-100">
                   <tr>
-
                     <th
                       onClick={() => handleSort("employee")}
                       className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
                     >
-                      <p className="flex items-center justify-between gap-2">
-                        Employee Photo
-                      </p>
+                      <p className="flex items-center justify-between gap-2">Employee Photo</p>
                     </th>
 
                     <th
@@ -299,9 +319,11 @@ const RatingsDisplay = () => {
                           viewBox="0 0 24 24"
                           strokeWidth="2"
                           stroke="currentColor"
-                          className={`w-4 h-4 transform transition-transform ${sortBy === 'employeeId' && order === 'desc' ? 'rotate-180' : ''}`}
+                          className={`w-4 h-4 transform transition-transform ${
+                            sortBy === "employeeId" && order === "desc" ? "rotate-180" : ""
+                          }`}
                         >
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"></path>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" />
                         </svg>
                       </p>
                     </th>
@@ -318,9 +340,11 @@ const RatingsDisplay = () => {
                           viewBox="0 0 24 24"
                           strokeWidth="2"
                           stroke="currentColor"
-                          className={`w-4 h-4 transform transition-transform ${sortBy === 'employeeName' && order === 'desc' ? 'rotate-180' : ''}`}
+                          className={`w-4 h-4 transform transition-transform ${
+                            sortBy === "employeeName" && order === "desc" ? "rotate-180" : ""
+                          }`}
                         >
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"></path>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" />
                         </svg>
                       </p>
                     </th>
@@ -337,9 +361,11 @@ const RatingsDisplay = () => {
                           viewBox="0 0 24 24"
                           strokeWidth="2"
                           stroke="currentColor"
-                          className={`w-4 h-4 transform transition-transform ${sortBy === 'customerName' && order === 'desc' ? 'rotate-180' : ''}`}
+                          className={`w-4 h-4 transform transition-transform ${
+                            sortBy === "customerName" && order === "desc" ? "rotate-180" : ""
+                          }`}
                         >
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"></path>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" />
                         </svg>
                       </p>
                     </th>
@@ -356,9 +382,11 @@ const RatingsDisplay = () => {
                           viewBox="0 0 24 24"
                           strokeWidth="2"
                           stroke="currentColor"
-                          className={`w-4 h-4 transform transition-transform ${sortBy === 'googleReviewId' && order === 'desc' ? 'rotate-180' : ''}`}
+                          className={`w-4 h-4 transform transition-transform ${
+                            sortBy === "googleReviewId" && order === "desc" ? "rotate-180" : ""
+                          }`}
                         >
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"></path>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" />
                         </svg>
                       </p>
                     </th>
@@ -375,9 +403,11 @@ const RatingsDisplay = () => {
                           viewBox="0 0 24 24"
                           strokeWidth="2"
                           stroke="currentColor"
-                          className={`w-4 h-4 transform transition-transform ${sortBy === 'googleReviewId' && order === 'desc' ? 'rotate-180' : ''}`}
+                          className={`w-4 h-4 transform transition-transform ${
+                            sortBy === "googleReviewId" && order === "desc" ? "rotate-180" : ""
+                          }`}
                         >
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"></path>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" />
                         </svg>
                       </p>
                     </th>
@@ -385,7 +415,6 @@ const RatingsDisplay = () => {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Actions
                     </th>
-
                   </tr>
                 </thead>
 
@@ -396,8 +425,8 @@ const RatingsDisplay = () => {
                         <img
                           src={
                             rating.employee?.employeePhoto
-                              ? `${BASE_URL}/${rating.employee.employeePhoto.replace(/\\/g, '/')}`
-                              : 'https://via.placeholder.com/40'
+                              ? `${BASE_URL}/${rating.employee.employeePhoto.replace(/\\/g, "/")}`
+                              : "https://via.placeholder.com/40"
                           }
                           alt="Employee"
                           className="w-10 h-10 rounded-full object-cover"
@@ -420,9 +449,7 @@ const RatingsDisplay = () => {
                         {rating.googleReviewId || "N/A"}
                       </td>
 
-                      <td className="px-6 py-4 text-sm text-gray-900">
-                        {rating.rating}
-                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-900">{rating.rating}</td>
 
                       <td className="px-3 sm:px-6 py-4 text-sm">
                         <Link
@@ -438,7 +465,6 @@ const RatingsDisplay = () => {
               </table>
             </div>
 
-            {/* Pagination */}
             <div className="flex items-center justify-between p-3">
               <p className="text-sm text-slate-500">
                 Page {currentPage} of {totalPages || 1}

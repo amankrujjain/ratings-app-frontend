@@ -49,7 +49,7 @@ const EmployeeReviews = () => {
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 max-w-full overflow-x-hidden">
       <button
         onClick={() => navigate(-1)}
         className="mb-4 px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
@@ -129,19 +129,19 @@ const EmployeeReviews = () => {
       </div>
 
       {/* Reviews List with Pagination */}
-      <div className="bg-white p-6 rounded-lg shadow-md">
+      <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md w-full max-w-full">
         <h3 className="text-xl font-semibold mb-4">Reviews</h3>
         {employeeRatings.length === 0 ? (
           <p className="text-gray-500">No reviews yet</p>
         ) : (
           <>
-            <div className="space-y-6">
+            <div className="space-y-6 w-full">
               {currentReviews.map(rating => (
                 <div 
                   key={rating._id} 
-                  className="flex w-full p-4 flex-col rounded-lg bg-white shadow-sm border border-slate-200"
+                  className="p-4 rounded-lg bg-white shadow-sm border border-slate-200 w-full overflow-hidden"
                 >
-                  <div className="flex items-center justify-between text-slate-800">
+                  <div className="flex items-center justify-between text-slate-800 flex-wrap gap-2">
                     <h5 className="text-xl font-semibold text-slate-800">
                       {rating.customerName || "Anonymous"}
                     </h5>
@@ -163,11 +163,11 @@ const EmployeeReviews = () => {
                       ))}
                     </div>
                   </div>
-                  <div className="flex justify-between items-center mt-2">
-                    <p className="text-base text-slate-600 font-light leading-normal">
+                  <div className="mt-2">
+                    <p className="text-base text-slate-600 font-light leading-normal break-words overflow-wrap-anywhere">
                       {rating.feedback || "No comment provided"}
                     </p>
-                    <p className="text-sm text-gray-400 ml-4 whitespace-nowrap">
+                    <p className="text-sm text-gray-400 mt-2">
                       {new Date(rating.createdAt).toLocaleDateString()}
                     </p>
                   </div>
