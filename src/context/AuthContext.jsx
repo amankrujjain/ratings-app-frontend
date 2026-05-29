@@ -18,9 +18,13 @@ export const AuthProvider = ({ children }) => {
     setMessage(null);
 
     try {
+      const token = localStorage.getItem("accessToken");
       const response = await fetch(`${BASE_URL}${endpoint}`, {
         method,
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify(body),
       });
 

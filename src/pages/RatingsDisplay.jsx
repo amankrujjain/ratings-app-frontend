@@ -19,6 +19,7 @@ const RatingsDisplay = () => {
     requiresReauth: false,
     message: "",
   });
+  const [isGmbAuthModalOpen, setIsGmbAuthModalOpen] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
@@ -42,13 +43,15 @@ const RatingsDisplay = () => {
     const gmbError = params.get("error");
 
     if (gmbConnected === "true" && gmbAuthorized === "true") {
-      toast.success("Google Business account connected. You can sync reviews now.");
+      toast.success("GMB login successful. You can sync reviews now.");
       setGmbSyncState({ requiresReauth: false, message: "" });
+      setIsGmbAuthModalOpen(false);
     } else if (gmbConnected === "false") {
       const message =
-        gmbError || "Google Business authorization failed. Please re-authorize and try again.";
+        gmbError || "GMB sync failed. Please login to GMB to continue.";
       toast.error(message);
       setGmbSyncState({ requiresReauth: true, message });
+      setIsGmbAuthModalOpen(true);
     }
 
     if (gmbConnected) {
@@ -182,8 +185,9 @@ const RatingsDisplay = () => {
       if (syncError.requiresReauth) {
         setGmbSyncState({
           requiresReauth: true,
-          message: "Google Business authentication expired or is invalid. Please re-authorize and try again.",
+          message: "GMB sync failed. Please login to GMB to continue.",
         });
+        setIsGmbAuthModalOpen(true);
       }
 
       toast.error(syncError.message || "Sync failed");
@@ -281,13 +285,6 @@ const RatingsDisplay = () => {
           {gmbSyncState.requiresReauth && (
             <div className="mt-4 rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
               <p>{gmbSyncState.message}</p>
-              <button
-                onClick={handleReconnectGMB}
-                disabled={isReauthorizingGMB}
-                className="mt-3 inline-flex items-center justify-center rounded bg-amber-600 px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-amber-700 disabled:pointer-events-none disabled:opacity-60"
-              >
-                {isReauthorizingGMB ? "Opening Google..." : "Re-authorize Google Business"}
-              </button>
             </div>
           )}
         </div>
@@ -500,6 +497,36 @@ const RatingsDisplay = () => {
           onConfirm={confirmDelete}
           ratingId={selectedRatingId}
         />
+
+        {isGmbAuthModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 px-4">
+            <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+              <h3 className="text-lg font-semibold text-slate-900">Login to GMB</h3>
+              <p className="mt-2 text-sm text-slate-600">
+                {gmbSyncState.message || "GMB sync failed. Please login to GMB to continue."}
+              </p>
+              <p className="mt-2 text-sm text-slate-500">
+                Once Google authentication is completed, your token will be stored in the backend and you can sync again.
+              </p>
+
+              <div className="mt-5 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                <button
+                  onClick={() => setIsGmbAuthModalOpen(false)}
+                  className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleReconnectGMB}
+                  disabled={isReauthorizingGMB}
+                  className="rounded-lg bg-slate-800 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:pointer-events-none disabled:opacity-60"
+                >
+                  {isReauthorizingGMB ? "Opening Google..." : "Login to GMB"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

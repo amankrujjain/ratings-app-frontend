@@ -100,13 +100,7 @@ const ReviewDetails = () => {
                                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
 
                                     <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center">
-                                            <img
-                                                src="https://www.gstatic.com/images/branding/product/1x/gmb_48dp.png"
-                                                alt="Google"
-                                                className="w-6 h-6"
-                                            />
-                                        </div>
+                                      
                                         <div>
                                             <p className="text-xs text-slate-500 uppercase tracking-wider font-medium">
                                                 Source
